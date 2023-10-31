@@ -11,10 +11,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
+private val lightColorScheme = lightColorScheme(
+    primary = KavachColor.Purple40,
+    secondary = KavachColor.PurpleGrey40,
+    tertiary = KavachColor.Pink40,
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
@@ -31,7 +31,7 @@ fun KavachTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = LightColorScheme
+    val colorScheme = lightColorScheme
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {

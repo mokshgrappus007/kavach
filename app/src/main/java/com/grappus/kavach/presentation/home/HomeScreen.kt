@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import com.grappus.kavach.ui.theme.KavachTheme
+import com.grappus.kavach.ui.theme.KavachColor
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -17,11 +17,9 @@ fun HomeScreen(navController: NavController) {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun HomeScreenBody() {
-    KavachTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Text(
-                text = "Hello Everyone",
-            )
-        }
+    Surface(modifier = Modifier.fillMaxSize(), color = KavachColor.RaisinBlack) {
+        Text(
+            text = "Hello Everyone",
+        )
     }
 }
