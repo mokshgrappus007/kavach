@@ -33,7 +33,7 @@ object KavachTheme {
         primary = KavachColor.Purple40,
         secondary = KavachColor.PurpleGrey40,
         tertiary = KavachColor.Pink40,
-        background = KavachColor.RaisinBlack,
+        surface = KavachColor.RaisinBlack,
         /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
@@ -53,7 +53,7 @@ fun KavachTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = colorScheme
-    StatusBarTheme(isDark = isDark, background = colorScheme.background)
+    StatusBarTheme(isDark, colorScheme.surface)
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -63,13 +63,15 @@ fun KavachTheme(
 }
 
 @Composable
-fun StatusBarTheme(isDark: Boolean, background: Color) {
+fun StatusBarTheme(isDark: Boolean, color: Color) {
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = background.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars != isDark
+            window.statusBarColor = color.toArgb()
+            window.navigationBarColor = color.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !isDark
+            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = !isDark
         }
     }
 }
