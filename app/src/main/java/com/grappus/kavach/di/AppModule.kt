@@ -79,5 +79,4 @@ object AppModule {
         return retrofit.create(KavachApi::class.java)
     }
 
-
 }
