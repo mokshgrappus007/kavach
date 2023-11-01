@@ -131,8 +131,7 @@ fun PhoneVerificationPage(navController: NavController) {
                                     fontWeight = FontWeight.Normal
                                 ),
                             )
-                            TextField(
-                                value = phoneTextFieldState,
+                            TextField(value = phoneTextFieldState,
                                 colors = TextFieldDefaults.colors(
                                     focusedContainerColor = KavachColor.Transparent,
                                     unfocusedContainerColor = KavachColor.Transparent,
@@ -178,18 +177,18 @@ fun PhoneVerificationPage(navController: NavController) {
                 Spacer(
                     modifier = Modifier.height((Constants.screenHeight * 0.45).dp)
                 )
-                Card(
-                    shape = RoundedCornerShape(50.dp), colors = CardDefaults.cardColors(
-                        containerColor = KavachColor.vampireBlack
-                    ), modifier = Modifier.fillMaxWidth()
-                ) {
+                Card(shape = RoundedCornerShape(50.dp), colors = CardDefaults.cardColors(
+                    containerColor = KavachColor.vampireBlack
+                ), modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.navigate(Screen.Dashboard.route)
+                    }) {
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(vertical = (Constants.screenHeight * 0.018).dp)
-                            .clickable {
-                                navController.navigate(Screen.Dashboard.route)
-                            }
+
                     ) {
                         Text(
                             text = "Continue",

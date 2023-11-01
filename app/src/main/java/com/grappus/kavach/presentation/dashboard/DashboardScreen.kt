@@ -42,19 +42,22 @@ import com.grappus.kavach.R
 import com.grappus.kavach.navigation.Screen
 import com.grappus.kavach.presentation.common.KavachIconButton
 import com.grappus.kavach.ui.theme.KavachColor
+import com.grappus.kavach.ui.theme.KavachTheme
 
 @Composable
 fun DashboardScreen(navController: NavController) {
-    Surface(Modifier.fillMaxSize()) {
-        var selectedIndex = rememberSaveable { mutableIntStateOf(0) }
-        Column {
-            Spacer(Modifier.height(16.dp))
-            TopBar(onTapped = { navController.navigate(Screen.Support.route) })
-            Spacer(Modifier.height(20.dp))
-            TabBar(selectedIndex, onTabChanged = {
-                selectedIndex.value = it
-            })
-            TabBody(selectedIndex)
+    KavachTheme.dark {
+        Surface(Modifier.fillMaxSize()) {
+            var selectedIndex = rememberSaveable { mutableIntStateOf(0) }
+            Column {
+                Spacer(Modifier.height(16.dp))
+                TopBar(onTapped = { navController.navigate(Screen.Support.route) })
+                Spacer(Modifier.height(20.dp))
+                TabBar(selectedIndex, onTabChanged = {
+                    selectedIndex.value = it
+                })
+                TabBody(selectedIndex)
+            }
         }
     }
 }
@@ -166,21 +169,23 @@ fun TabBar(selectedIndex: State<Int>, onTabChanged: (index: Int) -> Unit) {
 
 @Composable
 fun DummyNavigation(navController: NavController) {
-    Surface(Modifier.fillMaxSize()) {
-        Column {
-            Spacer(Modifier.height(16.dp))
-            KavachIconButton(
-                modifier = Modifier.padding(start = 16.dp),
-                image = {
-                    Image(
-                        imageVector = Icons.Rounded.KeyboardArrowLeft,
-                        contentDescription = "back",
-                        colorFilter = ColorFilter.tint(KavachColor.White)
-                    )
-                }, onClicked = { navController.popBackStack() }
-            )
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                Text(text = "Coming Soon", style = MaterialTheme.typography.titleMedium)
+    KavachTheme.dark {
+        Surface(Modifier.fillMaxSize()) {
+            Column {
+                Spacer(Modifier.height(16.dp))
+                KavachIconButton(
+                    modifier = Modifier.padding(start = 16.dp),
+                    image = {
+                        Image(
+                            imageVector = Icons.Rounded.KeyboardArrowLeft,
+                            contentDescription = "back",
+                            colorFilter = ColorFilter.tint(KavachColor.White)
+                        )
+                    }, onClicked = { navController.popBackStack() }
+                )
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    Text(text = "Coming Soon", style = MaterialTheme.typography.titleMedium)
+                }
             }
         }
     }
