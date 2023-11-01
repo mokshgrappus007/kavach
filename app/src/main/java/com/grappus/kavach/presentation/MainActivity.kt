@@ -20,6 +20,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            KavachTheme.dark {
             GetDeviceSize()
             KavachTheme(KavachTheme.lightColorScheme, false) {
                 NavGraph(sharedPreferences)
