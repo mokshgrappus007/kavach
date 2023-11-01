@@ -92,4 +92,7 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.moshi.kotlin)
     kapt(libs.moshi.kotlin.codegen)
+
+//    shared Pref
+    implementation(libs.security.crypto)
 }
