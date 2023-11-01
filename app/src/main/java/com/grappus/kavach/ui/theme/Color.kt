@@ -89,7 +89,7 @@ object KavachColor {
     val seaGreen = Color(0xff2A8D5C)
 
     // yellow shades
-    val cornSilk = Color(0xFFFFFADE)
+    val CornSilk = Color(0xFFFFFADE)
 
     // pink shade
     val heliotrope = Color(0xFFDE4FF3)

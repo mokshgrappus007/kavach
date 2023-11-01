@@ -62,7 +62,7 @@ fun DashboardScreen(navController: NavController) {
 @Composable
 private fun TabBody(selectedIndex: State<Int>) {
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-        Text(text = "Coming Soon", style = MaterialTheme.typography.titleLarge)
+        Text(text = "Coming Soon", style = MaterialTheme.typography.titleMedium)
     }
 }
 
@@ -156,7 +156,7 @@ fun TabBar(selectedIndex: State<Int>, onTabChanged: (index: Int) -> Unit) {
                     Text(
                         text = text,
                         color = if (isSelected) KavachColor.Black else KavachColor.White,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(horizontal = 4.dp)
                     )
                 })
@@ -180,7 +180,7 @@ fun DummyNavigation(navController: NavController) {
                 }, onClicked = { navController.popBackStack() }
             )
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                Text(text = "Coming Soon", style = MaterialTheme.typography.titleLarge)
+                Text(text = "Coming Soon", style = MaterialTheme.typography.titleMedium)
             }
         }
     }

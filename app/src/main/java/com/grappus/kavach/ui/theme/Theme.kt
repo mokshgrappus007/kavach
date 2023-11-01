@@ -1,7 +1,6 @@
 package com.grappus.kavach.ui.theme
 
 import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -32,6 +31,7 @@ object KavachTheme {
         primary = KavachColor.Purple40,
         secondary = KavachColor.PurpleGrey40,
         tertiary = KavachColor.Pink40,
+        surface = KavachColor.CornSilk
         /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
