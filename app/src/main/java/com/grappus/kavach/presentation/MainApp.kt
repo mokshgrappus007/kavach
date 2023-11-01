@@ -12,7 +12,7 @@ class MainApp : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            KavachTheme(KavachTheme.lightColorScheme, false) {
+            KavachTheme.dark {
                 NavGraph()
             }
         }
