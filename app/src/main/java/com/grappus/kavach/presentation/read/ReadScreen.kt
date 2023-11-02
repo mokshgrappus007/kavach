@@ -72,14 +72,14 @@ fun ReadScreenBody(navController: NavController) {
     val scrollState = rememberScrollState()
 
 
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(color = Color(0xFF0b0a07)
-//
-//            ),
-//        contentAlignment = Alignment.Center,
-//    ) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color(0xFF0b0a07)
+
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
 //        Image(
 //            painter = painterResource(id = R.drawable.read_bg),
 //            modifier = Modifier
@@ -88,9 +88,9 @@ fun ReadScreenBody(navController: NavController) {
 //            contentDescription = "Background Image",
 //            contentScale = ContentScale.Crop
 //        )
-//
-//
-//    }
+
+
+    }
 
     Column(
         modifier = Modifier
