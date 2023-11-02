@@ -78,4 +78,28 @@ class AuthRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) :
             ResponseData.Error(message = "Unable to proceed request")
         }
     }
+
+    override suspend fun getCurrentUser(): ResponseData<User> {
+        return try {
+            val response = kavachApi.getCurrentUser()
+            if (response.isSuccessful) {
+                val successResult = response.body()
+                if (successResult != null) {
+                    ResponseData.Success(
+                        data = UserMapper().fromMap(successResult)
+                    )
+                } else {
+                    ResponseData.Error(
+                        message = "User data is null"
+                    )
+                }
+
+            } else {
+                val errorResponse = response.errorBody()
+                ResponseData.Error(message = "Unable to create user")
+            }
+        } catch (e: Exception) {
+            ResponseData.Error(message = "Unable to proceed request")
+        }
+    }
 }

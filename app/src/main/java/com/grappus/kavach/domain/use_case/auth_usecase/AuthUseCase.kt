@@ -1,7 +1,8 @@
 package com.grappus.kavach.domain.use_case.auth_usecase
 
 data class AuthUseCase(
-    val getOtp: GetOtp,
+    val sendOtp: SendOtp,
     val verifyOtp: VerifyOtp,
-    val createNewUser: CreateNewUser
+    val createNewUser: CreateNewUser,
+    val getCurrentUserDetails: GetCurrentUserDetails
 )

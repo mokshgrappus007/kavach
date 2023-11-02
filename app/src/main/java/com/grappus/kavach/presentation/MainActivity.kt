@@ -2,7 +2,6 @@ package com.grappus.kavach.presentation
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
@@ -14,7 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainApp : ComponentActivity() {
+class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences

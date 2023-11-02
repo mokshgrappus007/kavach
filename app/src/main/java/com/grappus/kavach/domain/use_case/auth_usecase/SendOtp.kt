@@ -5,7 +5,7 @@ import com.grappus.kavach.domain.model.request_model.OtpSentRequest
 import com.grappus.kavach.domain.repository.AuthRepository
 
 typealias isOtpSent = Boolean
-class GetOtp(
+class SendOtp(
     private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(phoneNumber: String): ResponseData<isOtpSent> {
