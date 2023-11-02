@@ -1,14 +1,12 @@
 package com.grappus.kavach.data.repository
 
 import com.grappus.kavach.data.data_source.KavachApi
-import com.grappus.kavach.data.mappers.NewUserRequestBodyMapper
-import com.grappus.kavach.data.mappers.OtpRequestMapper
-import com.grappus.kavach.data.mappers.OtpVerifyRequestMapper
-import com.grappus.kavach.data.mappers.UserMapper
+import com.grappus.kavach.data.mappers.*
 import com.grappus.kavach.domain.ResponseData
 import com.grappus.kavach.domain.model.request_model.NewUserRequestBody
 import com.grappus.kavach.domain.model.request_model.OtpSentRequest
 import com.grappus.kavach.domain.model.request_model.OtpVerifyRequest
+import com.grappus.kavach.domain.model.response_model.OtpVerified
 import com.grappus.kavach.domain.model.response_model.User
 import com.grappus.kavach.domain.repository.AuthRepository
 import javax.inject.Inject
@@ -32,13 +30,18 @@ class AuthRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) :
     }
 
 
-    override suspend fun verifyOtp(otpVerifyRequest: OtpVerifyRequest): ResponseData<String> {
+    override suspend fun verifyOtp(otpVerifyRequest: OtpVerifyRequest): ResponseData<OtpVerified> {
         return try {
             val response = kavachApi.verifyOtp(OtpVerifyRequestMapper().fromMap(otpVerifyRequest))
             if (response.isSuccessful) {
                 val authToken = response.headers()["x-auth-token"]
                 if (authToken != null) {
-                    ResponseData.Success(data = authToken)
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        ResponseData.Success(data = OtpVerifiedWrapper(authToken = authToken).fromMap(responseBody))
+                    } else {
+                        ResponseData.Error(message = "No Response")
+                    }
                 } else {
                     ResponseData.Error(message = "No auth token present")
                 }
@@ -57,11 +60,11 @@ class AuthRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) :
             val response = kavachApi.createNewUser(NewUserRequestBodyMapper().fromMap(newUserRequestBody))
             if (response.isSuccessful) {
                 val successResult = response.body()
-                if (successResult != null){
+                if (successResult != null) {
                     ResponseData.Success(
                         data = UserMapper().fromMap(successResult)
                     )
-                }else{
+                } else {
                     ResponseData.Error(
                         message = "User data is null"
                     )

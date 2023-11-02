@@ -1,6 +1,6 @@
 package com.grappus.kavach.domain
 
-sealed class ResponseData<T>(val data: T? = null, val message: String? = null) {
-    class Success<T>(data: T?): ResponseData<T>(data)
-    class Error<T>(message: String, data: T? = null): ResponseData<T>(data, message)
+sealed class ResponseData<out T> {
+    data class Success<out T>(val data: T) : ResponseData<T>()
+    data class Error(val message: String) : ResponseData<Nothing>()
 }
