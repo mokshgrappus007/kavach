@@ -32,14 +32,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.grappus.kavach.R
+import com.grappus.kavach.ui.theme.InterFont
 import com.grappus.kavach.ui.theme.KavachTheme
 
 
@@ -73,25 +72,25 @@ fun ReadScreenBody(navController: NavController) {
     val scrollState = rememberScrollState()
 
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color(0xFF0b0a07)
-
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.read_bg),
-            modifier = Modifier
-                .fillMaxSize()
-                .offset { IntOffset(0, -scrollState.value) },
-            contentDescription = "Background Image",
-            contentScale = ContentScale.Crop
-        )
-
-
-    }
+//    Box(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(color = Color(0xFF0b0a07)
+//
+//            ),
+//        contentAlignment = Alignment.Center,
+//    ) {
+//        Image(
+//            painter = painterResource(id = R.drawable.read_bg),
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .offset { IntOffset(0, -scrollState.value) },
+//            contentDescription = "Background Image",
+//            contentScale = ContentScale.Crop
+//        )
+//
+//
+//    }
 
     Column(
         modifier = Modifier
@@ -116,8 +115,8 @@ fun ReadScreenBody(navController: NavController) {
                 .padding(end = 50.dp),
             text = "These are the 10 ways to rejection proof yourself!",
             style = TextStyle(
-                fontFamily = FontFamily(Font(R.font.inter_bold)),
-                fontWeight = FontWeight(400),
+                fontFamily = InterFont,
+                fontWeight = FontWeight.Bold,
                 fontSize = 28.sp,
                 lineHeight = 34.sp,
                 color = Color.White
@@ -127,8 +126,8 @@ fun ReadScreenBody(navController: NavController) {
             modifier = Modifier.padding(top = 13.dp, start = 20.dp, end = 40.dp),
             text = "Gear up to be Rejection-Proof! Check out the super cool article \"Crush Rejection with These 10 Awesome Tips!\" Learn how to bounce back like a champ, embrace feedback, and stay positive. With these epic techniques, you'll become a rejection-fighting superstar, ready to conquer any challenge! Let's rock it!",
             style = TextStyle(
-                fontFamily = FontFamily(Font(R.font.inter_regular)),
-                fontWeight = FontWeight(400),
+                fontFamily = InterFont,
+                fontWeight = FontWeight.Normal,
                 fontSize = 18.sp,
                 lineHeight = 30.sp,
                 letterSpacing = 0.1.sp,
@@ -141,8 +140,8 @@ fun ReadScreenBody(navController: NavController) {
         Text(
             "Scroll to deep dive",
             style = TextStyle(
-                fontFamily = FontFamily(Font(R.font.inter_regular)),
-                fontWeight = FontWeight(400),
+                fontFamily = InterFont,
+                fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
                 lineHeight = 30.sp,
                 letterSpacing = 0.1.sp,
@@ -158,8 +157,8 @@ fun ReadScreenBody(navController: NavController) {
         Text(
             "Rejection is a part of life, but it doesn't have to bring you down! By equipping yourself with the right tools, you can become rejection-proof and bounce back stronger than ever. Here are 10 awesome tips to help you conquer rejection and embrace success!\n",
             style = TextStyle(
-                fontFamily = FontFamily(Font(R.font.inter_regular)),
-                fontWeight = FontWeight(400),
+                fontFamily = InterFont,
+                fontWeight = FontWeight.Normal,
                 fontSize = 18.sp,
                 lineHeight = 30.sp,
                 letterSpacing = 0.1.sp,
@@ -203,19 +202,21 @@ fun AnimatingFAB(
     ) {
 
         if (isExpanded) {
-            Spacer(modifier = Modifier.width(40.dp))
+            Spacer(modifier = Modifier.width(60.dp))
         }
 
         if (isExpanded) {
             items.forEach {
-                MiniFab(item = it, onMiniFabItemClick = {miniFabItem ->
-                    when(miniFabItem.identifier){
+                MiniFab(item = it, onMiniFabItemClick = { miniFabItem ->
+                    when (miniFabItem.identifier) {
                         "LikeFab" -> {
 
                         }
+
                         "BookmarkFab" -> {
 
                         }
+
                         "ShareFab" -> {
 
                         }
@@ -279,8 +280,8 @@ fun MiniFab(
         Text(
             item.label,
             style = TextStyle(
-                fontFamily = FontFamily(Font(R.font.inter_regular)),
-                fontWeight = FontWeight(400),
+                fontFamily = InterFont,
+                fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
                 color = Color.White
             ),
