@@ -93,7 +93,6 @@ class AuthRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) :
                         message = "User data is null"
                     )
                 }
-
             } else {
                 val errorResponse = response.errorBody()
                 ResponseData.Error(message = "Unable to create user")

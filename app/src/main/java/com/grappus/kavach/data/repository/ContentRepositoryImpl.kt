@@ -13,9 +13,9 @@ import com.grappus.kavach.domain.repository.ContentRepository
 import javax.inject.Inject
 
 class ContentRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) : ContentRepository {
-    override suspend fun getContent(contentType: String): ResponseData<Content> {
+    override suspend fun getContent(contentType: String, personalized: Boolean): ResponseData<Content> {
         return try {
-            val response = kavachApi.getContent(type = contentType)
+            val response = kavachApi.getContent(type = contentType, personalized = personalized)
             if (response.isSuccessful) {
                 val successResult = response.body()
                 if (successResult != null) {
@@ -61,7 +61,7 @@ class ContentRepositoryImpl @Inject constructor(private val kavachApi: KavachApi
 
     override suspend fun getImage(fileName: String, contentType: String): ResponseData<Image> {
         return try {
-            val imageRequestBodyDto = ImageRequestBodyDto(fileName = fileName,contentType = contentType)
+            val imageRequestBodyDto = ImageRequestBodyDto(fileName = fileName, contentType = contentType)
             val response = kavachApi.getContentImage(imageRequestBodyDto = imageRequestBodyDto)
             if (response.isSuccessful) {
                 val successResult = response.body()
