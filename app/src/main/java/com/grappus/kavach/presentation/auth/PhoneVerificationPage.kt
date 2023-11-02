@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.grappus.kavach.ui.theme.BruleFont
 import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.Typography
@@ -42,7 +43,7 @@ import com.grappus.kavach.utils.Constants
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun PhoneVerificationPage() {
+fun PhoneVerificationPage(navController: NavController) {
     var phoneTextFieldState by remember {
         mutableStateOf("");
     }
