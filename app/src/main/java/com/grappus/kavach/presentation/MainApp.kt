@@ -23,7 +23,7 @@ class MainApp : ComponentActivity() {
         setContent {
             GetDeviceSize()
             KavachTheme(KavachTheme.lightColorScheme, false) {
-                NavGraph()
+                NavGraph(sharedPreferences)
             }
         }
     }
