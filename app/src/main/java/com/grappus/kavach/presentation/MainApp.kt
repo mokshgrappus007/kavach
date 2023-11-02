@@ -1,5 +1,6 @@
 package com.grappus.kavach.presentation
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -10,9 +11,13 @@ import com.grappus.kavach.navigation.NavGraph
 import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainApp : ComponentActivity() {
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
