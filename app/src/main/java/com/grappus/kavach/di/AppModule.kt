@@ -2,7 +2,6 @@ package com.grappus.kavach.di
 
 import android.content.SharedPreferences
 import com.grappus.kavach.data.data_source.KavachApi
-import com.grappus.kavach.domain.data_source.SharedPrefManager
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module

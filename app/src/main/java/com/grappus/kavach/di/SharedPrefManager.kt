@@ -1,4 +1,4 @@
-package com.grappus.kavach.domain.data_source
+package com.grappus.kavach.di
 
 import android.content.Context
 import android.content.SharedPreferences
