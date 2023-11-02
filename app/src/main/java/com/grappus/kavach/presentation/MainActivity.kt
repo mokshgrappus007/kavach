@@ -4,11 +4,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalConfiguration
 import com.grappus.kavach.navigation.NavGraph
-import com.grappus.kavach.ui.theme.KavachTheme
-import com.grappus.kavach.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -20,18 +16,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            KavachTheme.dark {
-            GetDeviceSize()
-            KavachTheme(KavachTheme.lightColorScheme, false) {
-                NavGraph(sharedPreferences)
-            }
+            NavGraph(sharedPreferences)
         }
     }
-}
-
-@Composable
-fun GetDeviceSize() {
-    val configuration = LocalConfiguration.current
-    Constants.screenHeight = configuration.screenHeightDp
-    Constants.screenWidth = configuration.screenWidthDp
 }

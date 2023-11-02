@@ -16,6 +16,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -37,7 +41,6 @@ import com.grappus.kavach.ui.theme.BruleFont
 import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.Typography
-import com.grappus.kavach.utils.Constants
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -46,163 +49,182 @@ fun LoginScreen(navController: NavController) {
     }
 
     KavachTheme.light {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    horizontal = (Constants.screenWidth * 0.04).dp,
-                    vertical = (Constants.screenHeight * 0.02).dp
-                )
-        ) {
-            Column {
-                Spacer(
-                    modifier = Modifier.height((Constants.screenHeight * 0.015).dp)
-                )
-                Row(Modifier.fillMaxWidth()) {
-                    Box(
-                        modifier = Modifier
-                            .size(
-                                height = 3.dp, width = (Constants.screenWidth * 0.4).dp
-                            )
-                            .background(color = KavachColor.vampireBlack)
-                            .weight(1f)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(
-                                height = 3.dp, width = (Constants.screenWidth * 0.4).dp
-                            )
-                            .background(color = KavachColor.Black.copy(alpha = 0.2F))
-                            .weight(1f)
-                    )
-                }
-                Box(Modifier.height((Constants.screenHeight * 0.04).dp))
-                Box(Modifier.width((Constants.screenWidth * 0.6).dp)) {
-                    Text(
-                        text = "YOUR NUMBER?", style = Typography.titleLarge.copy(
-                            fontSize = 39.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = BruleFont,
-                            lineHeight = 35.sp,
-                        )
-                    )
-                }
-                Box(Modifier.height((Constants.screenHeight * 0.015).dp))
-                Text(
-                    text = "We will use it to verify your account.",
-                    style = Typography.bodyLarge.copy(
-                        fontSize = 16.sp, color = KavachColor.vampireBlack.copy(alpha = 0.6F)
-                    ),
-                )
-                Box(Modifier.height((Constants.screenHeight * 0.09).dp))
-                Card(
-                    shape = RoundedCornerShape(80.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = KavachColor.vampireBlack.copy(
-                            alpha = 0.1F
-                        )
-                    ),
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
+                    containerColor = KavachColor.CornSilk,
+                    modifier = Modifier
+                        .padding(
+                            horizontal = 20.dp,
+                            vertical = 10.dp
+                        ),
+                    onClick = {},
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
                 ) {
-                    Box(
-                        modifier = Modifier.padding(
-                            horizontal = (Constants.screenWidth * 0.04).dp,
-                        )
+                    Card(
+                        shape = RoundedCornerShape(50.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = KavachColor.vampireBlack
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                navController.navigate(Screen.DashboardScreen.route)
+                            }
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(vertical = 15.dp)
+
                         ) {
                             Text(
-                                text = "+91",
+                                text = "Continue",
                                 style = Typography.bodyLarge.copy(
                                     fontSize = 16.sp,
-                                    color = KavachColor.vampireBlack,
-                                    fontWeight = FontWeight.Normal
+                                    color = KavachColor.White,
+                                    fontWeight = FontWeight.SemiBold
                                 ),
                             )
-                            Spacer(
-                                modifier = Modifier.width((Constants.screenWidth * 0.03).dp)
-                            )
-                            Text(
-                                text = "|",
-                                style = Typography.bodyLarge.copy(
-                                    fontSize = 16.sp,
-                                    color = KavachColor.vampireBlack,
-                                    fontWeight = FontWeight.Normal
-                                ),
-                            )
-                            TextField(
-                                value = phoneTextFieldState,
-                                colors = TextFieldDefaults.colors(
-                                    focusedContainerColor = KavachColor.Transparent,
-                                    unfocusedContainerColor = KavachColor.Transparent,
-                                    focusedIndicatorColor = KavachColor.Transparent,
-                                    unfocusedIndicatorColor = KavachColor.Transparent,
-
-                                    ),
-                                placeholder = {
-                                    Text(
-                                        text = "Enter phone number ...",
-                                        style = Typography.bodyLarge.copy(
-                                            fontSize = 16.sp,
-                                            color = KavachColor.vampireBlack,
-                                            fontWeight = FontWeight.Medium
-                                        ),
-                                    )
-                                },
-                                onValueChange = {
-                                    phoneTextFieldState = it
-                                },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
-                            )
-
                         }
                     }
                 }
-                Spacer(
-                    modifier = Modifier.height((Constants.screenHeight * 0.03).dp)
-                )
+            },
+            floatingActionButtonPosition = FabPosition.Center
+        ) { innerPadding ->
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                color = KavachColor.CornSilk
+            ) {
                 Box(
-                    Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.padding(
+                        horizontal = 20.dp,
+                        vertical = 25.dp
+                    ),
                 ) {
-                    Text(
-                        text = "Use email instead?",
-                        style = Typography.bodyLarge.copy(
-                            fontSize = 16.sp,
-                            color = KavachColor.vampireBlack,
-                            fontWeight = FontWeight.Medium
-                        ),
-
-                        )
-                }
-                Spacer(
-                    modifier = Modifier.height((Constants.screenHeight * 0.45).dp)
-                )
-                Card(shape = RoundedCornerShape(50.dp), colors = CardDefaults.cardColors(
-                    containerColor = KavachColor.vampireBlack
-                ), modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        navController.navigate(Screen.DashboardScreen.route)
-                    }) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(vertical = (Constants.screenHeight * 0.018).dp)
-
-                    ) {
+                    Column {
+                        Row(Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier = Modifier
+                                    .size(
+                                        height = 3.dp, width = 175.dp
+                                    )
+                                    .background(color = KavachColor.vampireBlack)
+                                    .weight(1f)
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .size(
+                                        height = 3.dp, width = 175.dp
+                                    )
+                                    .background(color = KavachColor.Black.copy(alpha = 0.2F))
+                                    .weight(1f)
+                            )
+                        }
+                        Box(Modifier.height(25.dp))
+                        Box(Modifier.width(240.dp)) {
+                            Text(
+                                text = "YOUR NUMBER?",
+                                style = Typography.titleLarge.copy(
+                                    fontSize = 39.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = BruleFont,
+                                    lineHeight = 35.sp,
+                                )
+                            )
+                        }
+                        Box(Modifier.height(8.dp))
                         Text(
-                            text = "Continue",
+                            text = "We'll use it to verify your account.",
                             style = Typography.bodyLarge.copy(
                                 fontSize = 16.sp,
-                                color = KavachColor.White,
-                                fontWeight = FontWeight.SemiBold
+                                color = KavachColor.vampireBlack.copy(alpha = 0.6F)
                             ),
                         )
+                        Box(Modifier.height(56.dp))
+                        Card(
+                            shape = RoundedCornerShape(80.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = KavachColor.vampireBlack.copy(
+                                    alpha = 0.1F
+                                )
+                            ),
+                        ) {
+                            Box(
+                                modifier = Modifier.padding(
+                                    horizontal = 16.dp,
+                                )
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "+91",
+                                        style = Typography.bodyLarge.copy(
+                                            fontSize = 16.sp,
+                                            color = KavachColor.vampireBlack,
+                                            fontWeight = FontWeight.Normal
+                                        ),
+                                    )
+                                    Spacer(
+                                        modifier = Modifier.width(13.dp)
+                                    )
+                                    Text(
+                                        text = "|",
+                                        style = Typography.bodyLarge.copy(
+                                            fontSize = 16.sp,
+                                            color = KavachColor.vampireBlack,
+                                            fontWeight = FontWeight.Normal
+                                        ),
+                                    )
+                                    TextField(
+                                        value = phoneTextFieldState,
+                                        colors = TextFieldDefaults.colors(
+                                            focusedContainerColor = KavachColor.Transparent,
+                                            unfocusedContainerColor = KavachColor.Transparent,
+                                            focusedIndicatorColor = KavachColor.Transparent,
+                                            unfocusedIndicatorColor = KavachColor.Transparent,
+
+                                            ),
+                                        placeholder = {
+                                            Text(
+                                                text = "Enter phone number ...",
+                                                style = Typography.bodyLarge.copy(
+                                                    fontSize = 16.sp,
+                                                    color = KavachColor.vampireBlack,
+                                                    fontWeight = FontWeight.Medium
+                                                ),
+                                            )
+                                        },
+                                        onValueChange = {
+                                            phoneTextFieldState = it
+                                        },
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                                    )
+
+                                }
+                            }
+                        }
+                        Spacer(
+                            modifier = Modifier.height(21.dp)
+                        )
+                        Box(
+                            Modifier.align(Alignment.CenterHorizontally)
+                        ) {
+                            Text(
+                                text = "Use email instead?",
+                                style = Typography.bodyLarge.copy(
+                                    fontSize = 16.sp,
+                                    color = KavachColor.vampireBlack,
+                                    fontWeight = FontWeight.Medium
+                                ),
+
+                                )
+                        }
                     }
                 }
-                Spacer(
-                    modifier = Modifier.height((Constants.screenHeight * 0.03).dp)
-                )
             }
         }
     }
