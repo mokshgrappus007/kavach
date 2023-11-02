@@ -40,8 +40,7 @@ import com.grappus.kavach.ui.theme.Typography
 import com.grappus.kavach.utils.Constants
 
 @Composable
-fun PhoneVerificationPage(navController: NavController) {
-fun PhoneVerificationPage(navController: NavController) {
+fun LoginScreen(navController: NavController) {
     var phoneTextFieldState by remember {
         mutableStateOf("");
     }
@@ -131,7 +130,8 @@ fun PhoneVerificationPage(navController: NavController) {
                                     fontWeight = FontWeight.Normal
                                 ),
                             )
-                            TextField(value = phoneTextFieldState,
+                            TextField(
+                                value = phoneTextFieldState,
                                 colors = TextFieldDefaults.colors(
                                     focusedContainerColor = KavachColor.Transparent,
                                     unfocusedContainerColor = KavachColor.Transparent,
@@ -182,7 +182,7 @@ fun PhoneVerificationPage(navController: NavController) {
                 ), modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        navController.navigate(Screen.Dashboard.route)
+                        navController.navigate(Screen.DashboardScreen.route)
                     }) {
                     Box(
                         modifier = Modifier

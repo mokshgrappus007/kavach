@@ -51,7 +51,7 @@ fun DashboardScreen(navController: NavController) {
             var selectedIndex = rememberSaveable { mutableIntStateOf(0) }
             Column {
                 Spacer(Modifier.height(16.dp))
-                TopBar(onTapped = { navController.navigate(Screen.Support.route) })
+                TopBar(onTapped = { navController.navigate(Screen.DashboardNestedScreen.route) })
                 Spacer(Modifier.height(20.dp))
                 TabBar(selectedIndex, onTabChanged = {
                     selectedIndex.value = it
@@ -168,7 +168,7 @@ fun TabBar(selectedIndex: State<Int>, onTabChanged: (index: Int) -> Unit) {
 }
 
 @Composable
-fun DummyNavigation(navController: NavController) {
+fun DashboardNestedScreen(navController: NavController) {
     KavachTheme.dark {
         Surface(Modifier.fillMaxSize()) {
             Column {
