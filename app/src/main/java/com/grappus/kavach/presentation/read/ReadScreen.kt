@@ -86,14 +86,14 @@ fun ReadScreenBody(navController: NavController) {
             ),
         contentAlignment = Alignment.Center,
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.read_bg),
-            modifier = Modifier
-                .fillMaxSize()
-                .offset { IntOffset(0, -scrollState.value) },
-            contentDescription = "Background Image",
-            contentScale = ContentScale.Crop
-        )
+//        Image(
+//            painter = painterResource(id = R.drawable.read_bg),
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .offset { IntOffset(0, -scrollState.value) },
+//            contentDescription = "Background Image",
+//            contentScale = ContentScale.Crop
+//        )
 
 
     }
@@ -191,7 +191,7 @@ fun AnimatingFAB(
     val transition = updateTransition(targetState = isExpanded, label = null)
 
     val rotate by transition.animateFloat(label = "rotate") {
-        if (it) 18f else 0f
+        if (it) 20f else 0f
     }
 
     val alpha by transition.animateFloat(label = "alpha",
@@ -241,7 +241,7 @@ fun AnimatingFAB(
             onClick = {
                 isExpanded = !isExpanded
             },
-            modifier = Modifier.graphicsLayer(rotationZ = rotate),
+            modifier = Modifier.graphicsLayer{rotationZ = rotate},
             containerColor = Color.White,
             contentColor = Color.Black,
             shape = CircleShape,
