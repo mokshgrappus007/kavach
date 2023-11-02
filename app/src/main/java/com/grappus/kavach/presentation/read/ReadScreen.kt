@@ -1,5 +1,6 @@
 package com.grappus.kavach.presentation.read
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -18,6 +19,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +30,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
@@ -45,7 +48,9 @@ import com.grappus.kavach.ui.theme.KavachTheme
 @Composable
 fun ReadScreen(navController: NavController) {
     KavachTheme(KavachTheme.darkColorScheme, true) {
-        ReadScreenBody(navController)
+        Surface(Modifier.fillMaxSize()) {
+            ReadScreenBody(navController)
+        }
     }
 }
 
@@ -75,19 +80,20 @@ fun ReadScreenBody(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF0b0a07)
+            .background(
+                color = Color(0xFF0b0a07)
 
             ),
         contentAlignment = Alignment.Center,
     ) {
-//        Image(
-//            painter = painterResource(id = R.drawable.read_bg),
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .offset { IntOffset(0, -scrollState.value) },
-//            contentDescription = "Background Image",
-//            contentScale = ContentScale.Crop
-//        )
+        Image(
+            painter = painterResource(id = R.drawable.read_bg),
+            modifier = Modifier
+                .fillMaxSize()
+                .offset { IntOffset(0, -scrollState.value) },
+            contentDescription = "Background Image",
+            contentScale = ContentScale.Crop
+        )
 
 
     }
@@ -181,12 +187,11 @@ fun AnimatingFAB(
     items: List<MiniFabItem>
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    val expandIcon = if (isExpanded) Icons.Default.Close else Icons.Default.Menu
 
     val transition = updateTransition(targetState = isExpanded, label = null)
 
     val rotate by transition.animateFloat(label = "rotate") {
-        if (it) 360f else 0f
+        if (it) 18f else 0f
     }
 
     val alpha by transition.animateFloat(label = "alpha",
@@ -194,10 +199,15 @@ fun AnimatingFAB(
         if (it) 1f else 0f
     }
 
+    val iconContent by transition.animateInt(label = "IconContent") { isExpanded ->
+        if (isExpanded) 1 else 0
+    }
+
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 20.dp, end = 20.dp, bottom = if(isExpanded) 0.dp else 21.dp),
+            .padding(top = 20.dp, end = 20.dp, bottom = if (isExpanded) 0.dp else 21.dp),
         horizontalArrangement = Arrangement.End
     ) {
 
@@ -231,13 +241,19 @@ fun AnimatingFAB(
             onClick = {
                 isExpanded = !isExpanded
             },
-            modifier = Modifier.rotate(rotate),
+            modifier = Modifier.graphicsLayer(rotationZ = rotate),
             containerColor = Color.White,
             contentColor = Color.Black,
             shape = CircleShape,
 
             content = {
-                Icon(imageVector = expandIcon, contentDescription = null)
+                Crossfade(targetState = iconContent, label = "Icon Fade") { contentState ->
+                    if (contentState == 0) {
+                        Icon(imageVector = Icons.Default.Menu, contentDescription = null)
+                    } else {
+                        Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                    }
+                }
             },
         )
 
