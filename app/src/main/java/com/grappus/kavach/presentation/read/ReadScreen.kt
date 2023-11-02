@@ -44,10 +44,9 @@ import com.grappus.kavach.R
 import com.grappus.kavach.ui.theme.InterFont
 import com.grappus.kavach.ui.theme.KavachTheme
 
-
 @Composable
 fun ReadScreen(navController: NavController) {
-    KavachTheme(KavachTheme.darkColorScheme, true) {
+    KavachTheme.dark {
         Surface(Modifier.fillMaxSize()) {
             ReadScreenBody(navController)
         }
@@ -241,7 +240,7 @@ fun AnimatingFAB(
             onClick = {
                 isExpanded = !isExpanded
             },
-            modifier = Modifier.graphicsLayer{rotationZ = rotate},
+            modifier = Modifier.graphicsLayer { rotationZ = rotate },
             containerColor = Color.White,
             contentColor = Color.Black,
             shape = CircleShape,

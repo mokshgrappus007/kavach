@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Kavach</string>
+    <string name="dashboard_for_you_tab">FOR YOU</string>
+    <string name="dashboard_listen_tab">LISTEN</string>
+    <string name="dashboard_watch_tab">WATCH</string>
+    <string name="dashboard_read_tab">READ</string>
 </resources>

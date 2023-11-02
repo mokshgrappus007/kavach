@@ -48,6 +48,14 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
+
+    titleMedium = TextStyle(
+        fontFamily = BruleFont,
+        fontWeight = FontWeight.Medium,
+        fontSize = 20.sp,
+        lineHeight = 18.sp,
+    ),
+
     titleLarge = TextStyle(
         fontFamily = InterFont,
         fontWeight = FontWeight.Normal,
@@ -55,7 +63,15 @@ val Typography = Typography(
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
-    /*
+
+    /* Other default text styles to override
+    titleLarge = TextStyle(
+        fontFamily = InterFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,

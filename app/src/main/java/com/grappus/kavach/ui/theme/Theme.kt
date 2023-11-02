@@ -1,7 +1,6 @@
 package com.grappus.kavach.ui.theme
 
 import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -14,10 +13,25 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 object KavachTheme {
-    val lightColorScheme = lightColorScheme(
+    @Composable
+    fun light(content: @Composable () -> Unit) {
+        KavachTheme(colorScheme = lightColorScheme, isDark = false) {
+            content()
+        }
+    }
+
+    @Composable
+    fun dark(content: @Composable () -> Unit) {
+        KavachTheme(colorScheme = darkColorScheme, isDark = true) {
+            content()
+        }
+    }
+
+    private val lightColorScheme = lightColorScheme(
         primary = KavachColor.Purple40,
         secondary = KavachColor.PurpleGrey40,
         tertiary = KavachColor.Pink40,
+        surface = KavachColor.CornSilk
         /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
@@ -29,7 +43,7 @@ object KavachTheme {
     */
     )
 
-    val darkColorScheme = darkColorScheme(
+    private val darkColorScheme = darkColorScheme(
         primary = KavachColor.Purple40,
         secondary = KavachColor.PurpleGrey40,
         tertiary = KavachColor.Pink40,
