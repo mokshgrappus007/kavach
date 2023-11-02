@@ -1,5 +1,5 @@
 [versions]
-agp = "8.1.2"
+agp = "8.0.0"
 org-jetbrains-kotlin-android = "1.8.10"
 core-ktx = "1.12.0"
 junit = "4.13.2"
@@ -17,6 +17,7 @@ coroutines = "1.7.3"
 retrofit = "2.9.0"
 okhttp = "5.0.0-alpha.11"
 moshi = "1.15.0"
+security-crypto = "1.1.0-alpha06"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -56,6 +57,9 @@ okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhtt
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
+
+security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
+
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
