@@ -11,4 +11,5 @@ interface AuthRepository {
     suspend fun getOtp(otpRequest: OtpSentRequest): ResponseData<Boolean>
     suspend fun verifyOtp(otpVerifyRequest: OtpVerifyRequest): ResponseData<OtpVerified>
     suspend fun createNewUser(newUserRequestBody: NewUserRequestBody): ResponseData<User>
+    suspend fun getCurrentUser(): ResponseData<User>
 }

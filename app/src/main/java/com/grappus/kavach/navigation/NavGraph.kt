@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.grappus.kavach.presentation.auth.PhoneVerificationPage
 import com.grappus.kavach.presentation.dashboard.DashboardScreen
-import javax.inject.Inject
+import com.grappus.kavach.presentation.read.ReadScreen
 
 @Composable
 fun NavGraph(sharedPreferences: SharedPreferences) {
@@ -26,6 +26,9 @@ fun NavGraph(sharedPreferences: SharedPreferences) {
         }
         composable(route = Screen.DashboardScreen.route) {
             DashboardScreen(navController = navController)
+        }
+        composable(route = Screen.ReadScreen.route) {
+            ReadScreen(navController = navController)
         }
     }
 }

@@ -3,10 +3,10 @@ package com.grappus.kavach.data.dto.response_body
 import com.squareup.moshi.Json
 
 data class ContentDetailDto(
-    val data: ContentDetailData
+    val data: ContentDetailDataDto
 )
 
-data class ContentDetailData(
+data class ContentDetailDataDto(
     @Json(name = "_id")
     val id: String,
     val category: String,

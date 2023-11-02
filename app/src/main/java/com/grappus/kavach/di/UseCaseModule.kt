@@ -2,10 +2,12 @@ package com.grappus.kavach.di
 
 import android.content.SharedPreferences
 import com.grappus.kavach.domain.repository.AuthRepository
-import com.grappus.kavach.domain.use_case.auth_usecase.AuthUseCase
-import com.grappus.kavach.domain.use_case.auth_usecase.CreateNewUser
-import com.grappus.kavach.domain.use_case.auth_usecase.GetOtp
-import com.grappus.kavach.domain.use_case.auth_usecase.VerifyOtp
+import com.grappus.kavach.domain.repository.ContentRepository
+import com.grappus.kavach.domain.use_case.auth_usecase.*
+import com.grappus.kavach.domain.use_case.content_usecase.ContentUseCase
+import com.grappus.kavach.domain.use_case.content_usecase.GetAllContent
+import com.grappus.kavach.domain.use_case.content_usecase.GetContentDetail
+import com.grappus.kavach.domain.use_case.content_usecase.GetImageUrl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,9 +22,20 @@ object UseCaseModule {
     @Singleton
     fun provideAuthUseCase(authRepository: AuthRepository, sharedPreferences: SharedPreferences): AuthUseCase {
         return AuthUseCase(
-            getOtp = GetOtp(authRepository),
+            sendOtp = SendOtp(authRepository),
             verifyOtp = VerifyOtp(authRepository, sharedPreferences),
-            createNewUser = CreateNewUser(authRepository)
+            createNewUser = CreateNewUser(authRepository),
+            getCurrentUserDetails = GetCurrentUserDetails(authRepository),
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideContentUseCase(contentRepository: ContentRepository):ContentUseCase{
+        return ContentUseCase(
+            getAllContent = GetAllContent(contentRepository),
+            getContentDetail = GetContentDetail(contentRepository),
+            getImage = GetImageUrl(contentRepository)
         )
     }
 }

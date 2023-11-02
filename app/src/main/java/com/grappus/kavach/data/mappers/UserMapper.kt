@@ -8,7 +8,6 @@ class UserMapper : Mapper<UserResponseDto, User> {
     override fun fromMap(from: UserResponseDto): User {
         val userData = UserData(
             id = from.data.id,
-            v = from.data.v,
             age = from.data.age,
             bookmarks = from.data.bookmarks,
             createdAt = from.data.createdAt,
@@ -20,7 +19,6 @@ class UserMapper : Mapper<UserResponseDto, User> {
             liked = from.data.liked,
             name = from.data.name,
             phone = from.data.phone,
-            uid = from.data.uid,
         )
         return User(data = userData)
     }
