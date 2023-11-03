@@ -1,5 +1,7 @@
 package com.grappus.kavach.presentation.dashboard
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -94,6 +96,7 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getAllListenUiContent(contentType: String? = null, personalized: Boolean = true) {
         dashboardListenUiState = dashboardListenUiState.copy(isLoading = true)
         viewModelScope.launch {

@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ fun LoginScreen(
 ) {
     val phoneNumberState = viewModel.phoneTextState
     val snackbarState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -72,6 +74,7 @@ fun LoginScreen(
                     ), modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
+                            focusManager.clearFocus()
                             viewModel.onEvent(LoginScreenEvent.SendOtp(phoneNumberState))
                         }) {
                         Box(
