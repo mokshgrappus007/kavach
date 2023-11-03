@@ -6,7 +6,10 @@ import com.grappus.kavach.domain.model.response_model.ContentDetails
 import com.grappus.kavach.domain.model.response_model.Image
 
 interface ContentRepository {
-    suspend fun getContent(contentType: String, personalized: Boolean): ResponseData<Content>
+    suspend fun getContent(
+        contentType: String? = null,
+        personalized: Boolean
+    ): ResponseData<Content>
 
     suspend fun getContentDetails(contentId: String): ResponseData<ContentDetails>
 

@@ -22,7 +22,7 @@ android {
         val properties = Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
         val baseUrl = properties.getProperty("base_url")
-        buildConfigField("String","BASE_URL",baseUrl)
+        buildConfigField("String", "BASE_URL", baseUrl)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -33,7 +33,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -95,4 +98,7 @@ dependencies {
 
 //    shared Pref
     implementation(libs.security.crypto)
+
+//    coil
+    implementation(libs.coil.compose)
 }
