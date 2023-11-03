@@ -151,7 +151,8 @@ private fun CardItemList(contentList: List<ContentListData>, selectedIndex: Stat
             CardItem(
                 heading = content.title,
                 contentType = content.category,
-                imageUrl = content.thumbnail
+                imageUrl = content.thumbnail,
+                date = content.createdAt
             )
         }
     }
@@ -163,6 +164,7 @@ private fun CardItem(
     heading: String,
     contentType: String,
     imageUrl: String? = null,
+    date: String
 ) {
     Card(
         modifier = Modifier
@@ -204,7 +206,7 @@ private fun CardItem(
                 Spacer(Modifier.height(17.dp))
                 Text(
                     modifier = Modifier.padding(start = 18.dp, bottom = 17.dp),
-                    text = "28 Jul ‘23 • 5 min read",
+                    text = "$date • 5 min read",
                     style = TextStyle(
                         fontSize = 14.sp,
                         lineHeight = 24.sp,

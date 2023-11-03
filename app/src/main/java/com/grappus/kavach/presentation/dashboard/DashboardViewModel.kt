@@ -1,6 +1,7 @@
 package com.grappus.kavach.presentation.dashboard
 
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -51,27 +52,7 @@ class DashboardViewModel @Inject constructor(
                 contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
             dashboardForYouUiState = when (response) {
                 is ResponseData.Success -> {
-                    val updatedContents = response.data.data.content.map { content ->
-                        val imageUrlResponse =
-                            contentUseCase.getImage(
-                                fileName = content.thumbnail,
-                                contentType = "thumbnail"
-                            )
-                        content.copy(
-                            thumbnail = when (imageUrlResponse) {
-                                is ResponseData.Success -> {
-                                    imageUrlResponse.data
-                                }
-
-                                is ResponseData.Error -> {
-                                    ""
-                                }
-                            }
-                        )
-                    }
-                    val updatedResponse =
-                        response.data.copy(data = response.data.data.copy(content = updatedContents))
-                    dashboardForYouUiState.copy(isLoading = false, data = updatedResponse)
+                    dashboardForYouUiState.copy(isLoading = false, data = response.data)
                 }
 
                 is ResponseData.Error -> {
@@ -88,27 +69,7 @@ class DashboardViewModel @Inject constructor(
                 contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
             dashboardReadUiState = when (response) {
                 is ResponseData.Success -> {
-                    val updatedContents = response.data.data.content.map { content ->
-                        val imageUrlResponse =
-                            contentUseCase.getImage(
-                                fileName = content.thumbnail,
-                                contentType = "thumbnail"
-                            )
-                        content.copy(
-                            thumbnail = when (imageUrlResponse) {
-                                is ResponseData.Success -> {
-                                    imageUrlResponse.data
-                                }
-
-                                is ResponseData.Error -> {
-                                    ""
-                                }
-                            }
-                        )
-                    }
-                    val updatedResponse =
-                        response.data.copy(data = response.data.data.copy(content = updatedContents))
-                    dashboardReadUiState.copy(isLoading = false, data = updatedResponse)
+                    dashboardForYouUiState.copy(isLoading = false, data = response.data)
                 }
 
                 is ResponseData.Error -> {
@@ -125,28 +86,7 @@ class DashboardViewModel @Inject constructor(
                 contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
             dashboardWatchUiState = when (response) {
                 is ResponseData.Success -> {
-                    val updatedContents = response.data.data.content.map { content ->
-                        val imageUrlResponse =
-                            contentUseCase.getImage(
-                                fileName = content.thumbnail,
-                                contentType = "thumbnail"
-                            )
-                        content.copy(
-                            thumbnail = when (imageUrlResponse) {
-                                is ResponseData.Success -> {
-                                    imageUrlResponse.data
-                                }
-
-                                is ResponseData.Error -> {
-                                    ""
-                                }
-                            }
-                        )
-                    }
-                    val updatedResponse =
-                        response.data.copy(data = response.data.data.copy(content = updatedContents))
-                    Log.v("conent", updatedResponse.toString())
-                    dashboardWatchUiState.copy(isLoading = false, data = updatedResponse)
+                    dashboardForYouUiState.copy(isLoading = false, data = response.data)
                 }
 
                 is ResponseData.Error -> {
@@ -156,6 +96,7 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getAllListenUiContent(contentType: String? = null, personalized: Boolean = true) {
         dashboardListenUiState = dashboardListenUiState.copy(isLoading = true)
         viewModelScope.launch {
@@ -163,27 +104,7 @@ class DashboardViewModel @Inject constructor(
                 contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
             dashboardListenUiState = when (response) {
                 is ResponseData.Success -> {
-                    val updatedContents = response.data.data.content.map { content ->
-                        val imageUrlResponse =
-                            contentUseCase.getImage(
-                                fileName = content.thumbnail,
-                                contentType = "thumbnail"
-                            )
-                        content.copy(
-                            thumbnail = when (imageUrlResponse) {
-                                is ResponseData.Success -> {
-                                    imageUrlResponse.data
-                                }
-
-                                is ResponseData.Error -> {
-                                    ""
-                                }
-                            }
-                        )
-                    }
-                    val updatedResponse =
-                        response.data.copy(data = response.data.data.copy(content = updatedContents))
-                    dashboardListenUiState.copy(isLoading = false, data = updatedResponse)
+                    dashboardForYouUiState.copy(isLoading = false, data = response.data)
                 }
 
                 is ResponseData.Error -> {
