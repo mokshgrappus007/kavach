@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val authUseCase: AuthUseCase) : ViewModel() {
+class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase) : ViewModel() {
 
     var phoneTextState by mutableStateOf("")
         private set
@@ -27,13 +27,13 @@ class AuthViewModel @Inject constructor(private val authUseCase: AuthUseCase) : 
         object Navigate : UiEvent()
     }
 
-    fun onEvent(event: PhoneVerificationEvent) {
+    fun onEvent(event: LoginScreenEvent) {
         when (event) {
-            is PhoneVerificationEvent.PhoneNumberChanges -> {
+            is LoginScreenEvent.PhoneNumberChanges -> {
                 phoneTextState = event.value
             }
 
-            is PhoneVerificationEvent.SendOtp -> {
+            is LoginScreenEvent.SendOtp -> {
                 sendOtp(event.phoneNumber)
             }
         }
@@ -41,8 +41,21 @@ class AuthViewModel @Inject constructor(private val authUseCase: AuthUseCase) : 
 
     fun sendOtp(phoneNumber: String) {
         viewModelScope.launch {
-            val response = authUseCase.sendOtp(phoneNumber = phoneNumber)
-            when (response) {
+            when (val response = authUseCase.sendOtp(phoneNumber = phoneNumber)) {
+                is ResponseData.Success -> {
+                    verifyOtp(otp = "9999", phoneNumber = phoneNumber)
+                }
+
+                is ResponseData.Error -> {
+                    _eventFlow.emit(UiEvent.ShowSnackbar(message = response.message))
+                }
+            }
+        }
+    }
+
+    fun verifyOtp(otp: String, phoneNumber: String) {
+        viewModelScope.launch {
+            when (val response = authUseCase.verifyOtp(phoneNumber = phoneNumber, otp = otp)) {
                 is ResponseData.Success -> {
                     _eventFlow.emit(UiEvent.Navigate)
                 }

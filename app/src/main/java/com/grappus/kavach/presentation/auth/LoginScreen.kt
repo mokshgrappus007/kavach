@@ -2,54 +2,60 @@ package com.grappus.kavach.presentation.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.grappus.kavach.navigation.Screen
 import com.grappus.kavach.ui.theme.BruleFont
 import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.Typography
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun LoginScreen(navController: NavController) {
-    var phoneTextFieldState by remember {
-        mutableStateOf("");
+fun LoginScreen(
+    navController: NavController,
+    viewModel: LoginViewModel = hiltViewModel(),
+) {
+    val phoneNumberState = viewModel.phoneTextState
+    val snackbarState = remember { SnackbarHostState() }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is LoginViewModel.UiEvent.ShowSnackbar -> {
+                    snackbarState.showSnackbar(message = event.message)
+                }
+
+                is LoginViewModel.UiEvent.Navigate -> {
+                    navController.navigate(
+                        route = Screen.DashboardScreen.route,
+                        builder = {
+                            popUpTo(Screen.LoginScreen.route) {
+                                inclusive = true
+                            }
+                        }
+                    )
+                }
+            }
+        }
     }
 
     KavachTheme.light {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarState) },
             floatingActionButton = {
                 FloatingActionButton(
                     containerColor = KavachColor.CornSilk,
@@ -69,7 +75,7 @@ fun LoginScreen(navController: NavController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                navController.navigate(Screen.DashboardScreen.route)
+                                viewModel.onEvent(LoginScreenEvent.SendOtp(phoneNumberState))
                             }
                     ) {
                         Box(
@@ -180,7 +186,7 @@ fun LoginScreen(navController: NavController) {
                                         ),
                                     )
                                     TextField(
-                                        value = phoneTextFieldState,
+                                        value = phoneNumberState,
                                         colors = TextFieldDefaults.colors(
                                             focusedContainerColor = KavachColor.Transparent,
                                             unfocusedContainerColor = KavachColor.Transparent,
@@ -198,8 +204,15 @@ fun LoginScreen(navController: NavController) {
                                                 ),
                                             )
                                         },
-                                        onValueChange = {
-                                            phoneTextFieldState = it
+                                        onValueChange = { number ->
+                                            if (number.all { it.isDigit() } && number.length <= 10) {
+                                                val phoneNumber = number.toLongOrNull()
+                                                viewModel.onEvent(
+                                                    LoginScreenEvent.PhoneNumberChanges(
+                                                        phoneNumber?.toString() ?: ""
+                                                    )
+                                                )
+                                            }
                                         },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                                     )

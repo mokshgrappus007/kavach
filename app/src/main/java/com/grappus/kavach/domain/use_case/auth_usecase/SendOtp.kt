@@ -11,9 +11,9 @@ class SendOtp(
     private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(phoneNumber: String): ResponseData<isOtpSent> {
-        val phoneRegex = "^[0-9]{10}\$" // Example: 10 digits
+        val phoneRegex = "^[789]\\d{9}$"
 
-        if (!phoneNumber.matches(phoneRegex.toRegex())) {
+        if (!phoneNumber.matches(phoneRegex.toRegex()) || phoneNumber.isEmpty() || phoneNumber.length < 10) {
             return ResponseData.Error(message = "Invalid phone number")
         }
 
