@@ -12,9 +12,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -23,15 +22,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -141,7 +141,7 @@ fun ReadScreenBody(navController: NavController) {
             )
         )
 
-        AnimatingFAB(items = fabItems)
+        BottomFAB(items = fabItems)
 
         Text(
             "Scroll to deep dive",
@@ -183,7 +183,7 @@ fun ReadScreenBody(navController: NavController) {
 }
 
 @Composable
-fun AnimatingFAB(
+fun BottomFAB(
     items: List<MiniFabItem>
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -194,13 +194,8 @@ fun AnimatingFAB(
         if (it) 20f else 0f
     }
 
-    val alpha by transition.animateFloat(label = "alpha",
-        transitionSpec = { tween(durationMillis = 50) }) {
-        if (it) 1f else 0f
-    }
-
-    val iconContent by transition.animateInt(label = "IconContent") { isExpanded ->
-        if (isExpanded) 1 else 0
+    val iconContent by transition.animateInt(label = "IconContent") {
+        if (it) 1 else 0
     }
 
 
@@ -232,7 +227,7 @@ fun AnimatingFAB(
                         }
                     }
 
-                }, alpha = alpha)
+                })
                 Spacer(modifier = Modifier.weight(1f))
             }
         }
@@ -249,21 +244,24 @@ fun AnimatingFAB(
             content = {
                 Crossfade(targetState = iconContent, label = "Icon Fade") { contentState ->
                     if (contentState == 0) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = null)
+                        Box(
+                            modifier = Modifier.size(30.dp),
+                            contentAlignment = Center,
+                        ){
+                            Icon(painterResource(id = R.drawable.read_fab_menu), contentDescription = null)
+                        }
                     } else {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                        Icon(imageVector = Icons.Default.Clear, contentDescription = null, modifier = Modifier.size(30.dp))
                     }
                 }
             },
         )
-
-
     }
 }
 
 @Composable
 fun MiniFab(
-    item: MiniFabItem, alpha: Float, onMiniFabItemClick: (MiniFabItem) -> Unit
+    item: MiniFabItem, onMiniFabItemClick: (MiniFabItem) -> Unit
 ) {
     Column(
         horizontalAlignment = CenterHorizontally
@@ -275,7 +273,7 @@ fun MiniFab(
                     interactionSource = MutableInteractionSource(), onClick = {
                         onMiniFabItemClick.invoke(item)
                     }, indication = rememberRipple(
-                        bounded = false, radius = 26.dp, color = Color.White.copy(alpha = 0.08f)
+                        bounded = false, radius = 0.dp, color = Color.White.copy(alpha = 0.08f)
 
                     )
                 )
@@ -302,11 +300,6 @@ fun MiniFab(
                 color = Color.White
             ),
             modifier = Modifier
-                .alpha(
-                    animateFloatAsState(
-                        targetValue = alpha, animationSpec = tween(50), label = "textAlpha"
-                    ).value
-                )
                 .padding(top = 10.dp)
         )
     }
