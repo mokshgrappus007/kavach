@@ -7,7 +7,10 @@ import com.grappus.kavach.domain.repository.ContentRepository
 class GetAllContent(
     private val contentRepository: ContentRepository
 ) {
-    suspend operator fun invoke(contentType: String, personalized: Boolean = false): ResponseData<Content> {
+    suspend operator fun invoke(
+        contentType: String? = null,
+        personalized: Boolean = false
+    ): ResponseData<Content> {
         return contentRepository.getContent(contentType = contentType, personalized)
     }
 }

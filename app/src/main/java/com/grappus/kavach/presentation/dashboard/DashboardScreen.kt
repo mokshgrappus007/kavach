@@ -4,18 +4,26 @@ import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
@@ -31,30 +39,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.grappus.kavach.R
 import com.grappus.kavach.navigation.Screen
 import com.grappus.kavach.presentation.common.KavachIconButton
+import com.grappus.kavach.ui.theme.InterFont
 import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.KavachTheme
+import com.grappus.kavach.ui.theme.LuckiestGuyFont
 
 @Composable
 fun DashboardScreen(navController: NavController) {
     KavachTheme.dark {
         Surface(Modifier.fillMaxSize()) {
-            var selectedIndex = rememberSaveable { mutableIntStateOf(0) }
+            val selectedIndex = rememberSaveable { mutableIntStateOf(0) }
             Column {
                 Spacer(Modifier.height(16.dp))
                 TopBar(onTapped = { navController.navigate(Screen.DashboardNestedScreen.route) })
                 Spacer(Modifier.height(20.dp))
                 TabBar(selectedIndex, onTabChanged = {
-                    selectedIndex.value = it
+                    selectedIndex.intValue = it
                 })
                 TabBody(selectedIndex)
             }
@@ -64,8 +80,110 @@ fun DashboardScreen(navController: NavController) {
 
 @Composable
 private fun TabBody(selectedIndex: State<Int>) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-        Text(text = "Coming Soon", style = MaterialTheme.typography.titleMedium)
+    val topGradient = remember {
+        Brush.verticalGradient(
+            colors = listOf(KavachColor.RaisinBlack, Color.Transparent),
+        )
+    }
+    val bottomGradient = remember {
+        Brush.verticalGradient(
+            colors = listOf(Color.Transparent, KavachColor.RaisinBlack),
+        )
+    }
+    Box {
+        LazyColumn(
+            contentPadding = PaddingValues(top = 20.dp, start = 16.dp, end = 16.dp)
+        ) {
+            items(10) { _ ->
+                CardItem()
+            }
+        }
+        Box(
+            Modifier
+                .height(20.dp)
+                .fillMaxWidth()
+                .background(topGradient)
+                .align(Alignment.TopStart)
+        )
+        Box(
+            Modifier
+                .height(12.dp)
+                .fillMaxWidth()
+                .background(bottomGradient)
+                .align(Alignment.BottomEnd)
+        )
+    }
+}
+
+@Composable
+private fun CardItem() {
+    Card(
+        modifier = Modifier
+            .padding(bottom = 15.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(size = 12.dp)), elevation = cardElevation(
+            defaultElevation = 0.dp
+        )
+    ) {
+        Box {
+            Column {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(156.dp)
+                        .background(Color.White.copy(alpha = .2F))
+                )
+                Text(
+                    modifier = Modifier.padding(18.dp, 26.dp, 23.dp),
+                    text = "These are the 10 ways to rejection proof yourself!",
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        lineHeight = 24.sp,
+                        fontFamily = InterFont,
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                )
+                Spacer(Modifier.height(17.dp))
+                Text(
+                    modifier = Modifier.padding(start = 18.dp, bottom = 17.dp),
+                    text = "28 Jul ‘23 • 5 min read",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        lineHeight = 24.sp,
+                        fontFamily = InterFont,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White,
+                    )
+                )
+            }
+            Box(Modifier.offset(y = 134.dp, x = 18.dp)) {
+                Box(
+                    Modifier
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFF0B0A07),
+                            shape = RoundedCornerShape(size = 40.dp)
+                        )
+                        .background(
+                            color = Color(0xFFDE4FF3), shape = RoundedCornerShape(size = 40.dp)
+                        )
+                        .padding(
+                            start = 16.dp, top = 10.dp, end = 16.dp, bottom = 10.dp
+                        ), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "BULLYING", style = TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 24.sp,
+                            fontFamily = LuckiestGuyFont,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black,
+                        )
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -106,25 +224,20 @@ private fun TopBar(onTapped: () -> Unit) {
 @Composable
 fun TabBar(selectedIndex: State<Int>, onTabChanged: (index: Int) -> Unit) {
     val context = LocalContext.current
-    val list =
-        remember {
-            listOf(
-                context.resources.getString(R.string.dashboard_for_you_tab),
-                context.resources.getString(R.string.dashboard_read_tab),
-                context.resources.getString(R.string.dashboard_watch_tab),
-                context.resources.getString(R.string.dashboard_listen_tab),
-            )
-        }
+    val list = remember {
+        listOf(
+            context.resources.getString(R.string.dashboard_for_you_tab),
+            context.resources.getString(R.string.dashboard_read_tab),
+            context.resources.getString(R.string.dashboard_watch_tab),
+            context.resources.getString(R.string.dashboard_listen_tab),
+        )
+    }
 
-    ScrollableTabRow(
-        selectedTabIndex = selectedIndex.value,
-        indicator = {
-            Box {}
-        },
-        divider = {
-            Box {}
-        },
-        edgePadding = 12.dp
+    ScrollableTabRow(selectedTabIndex = selectedIndex.value, indicator = {
+        Box {}
+    }, divider = {
+        Box {}
+    }, edgePadding = 12.dp
     ) {
         list.forEachIndexed { index, text ->
             val isSelected = selectedIndex.value == index
@@ -139,30 +252,32 @@ fun TabBar(selectedIndex: State<Int>, onTabChanged: (index: Int) -> Unit) {
                 if (it) -3F else 0F
             }
 
-            Tab(modifier = Modifier
-                .padding(horizontal = 4.dp)
-                .clip(RoundedCornerShape(50))
-                .border(
-                    width = 1.dp,
-                    color = Color(0xFFFFFFFF),
-                    shape = RoundedCornerShape(size = 40.dp)
-                )
-                .drawBehind {
-                    drawRect(color = background)
-                }
-                .graphicsLayer {
-                    rotationZ = rotation
-                },
-                selected = isSelected,
-                onClick = { onTabChanged(index) },
-                text = {
-                    Text(
-                        text = text,
-                        color = if (isSelected) KavachColor.Black else KavachColor.White,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(horizontal = 4.dp)
-                    )
-                })
+            Box(
+                Modifier
+                    .graphicsLayer {
+                        transformOrigin = TransformOrigin(0.8f, 0.8f)
+                        rotationZ = rotation
+                    }
+                    .padding(bottom = 4.dp)
+                    .padding(horizontal = 4.dp)) {
+                Text(text = text,
+                    color = if (isSelected) KavachColor.Black else KavachColor.White,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .border(
+                            width = 1.dp,
+                            color = Color.White,
+                            shape = RoundedCornerShape(size = 40.dp)
+                        )
+                        .drawBehind {
+                            drawRect(color = background)
+                        }
+                        .clickable { onTabChanged(index) }
+                        .padding(
+                            start = 20.dp, top = 10.dp, end = 20.dp, bottom = 10.dp
+                        ))
+            }
         }
     }
 }
@@ -173,16 +288,13 @@ fun DashboardNestedScreen(navController: NavController) {
         Surface(Modifier.fillMaxSize()) {
             Column {
                 Spacer(Modifier.height(16.dp))
-                KavachIconButton(
-                    modifier = Modifier.padding(start = 16.dp),
-                    image = {
-                        Image(
-                            imageVector = Icons.Rounded.KeyboardArrowLeft,
-                            contentDescription = "back",
-                            colorFilter = ColorFilter.tint(KavachColor.White)
-                        )
-                    }, onClicked = { navController.popBackStack() }
-                )
+                KavachIconButton(modifier = Modifier.padding(start = 16.dp), image = {
+                    Image(
+                        imageVector = Icons.Rounded.KeyboardArrowLeft,
+                        contentDescription = "back",
+                        colorFilter = ColorFilter.tint(KavachColor.White)
+                    )
+                }, onClicked = { navController.popBackStack() })
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text(text = "Coming Soon", style = MaterialTheme.typography.titleMedium)
                 }

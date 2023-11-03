@@ -6,15 +6,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.grappus.kavach.presentation.auth.LoginScreen
+import com.grappus.kavach.presentation.dashboard.DashboardNestedScreen
 import com.grappus.kavach.presentation.dashboard.DashboardScreen
-import com.grappus.kavach.presentation.read.ReadScreen
+import com.grappus.kavach.presentation.detail.DetailScreen
 
 @Composable
 fun NavGraph(sharedPreferences: SharedPreferences) {
     val navController = rememberNavController()
 
     val authToken = sharedPreferences.getString("AUTH_KEY", "") ?: ""
-    var startDestination: String = Screen.LoginScreen.route
+    var startDestination: String = Screen.DashboardScreen.route
 
     if (authToken.isNotEmpty()) {
         startDestination = Screen.DashboardScreen.route
@@ -27,8 +28,11 @@ fun NavGraph(sharedPreferences: SharedPreferences) {
         composable(route = Screen.DashboardScreen.route) {
             DashboardScreen(navController = navController)
         }
-        composable(route = Screen.ReadScreen.route) {
-            ReadScreen(navController = navController)
+        composable(route = Screen.DashboardNestedScreen.route) {
+            DashboardNestedScreen(navController = navController)
+        }
+        composable(route = Screen.DetailScreen.route) {
+            DetailScreen(navController = navController)
         }
     }
 }

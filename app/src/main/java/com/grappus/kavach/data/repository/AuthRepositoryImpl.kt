@@ -1,7 +1,11 @@
 package com.grappus.kavach.data.repository
 
 import com.grappus.kavach.data.data_source.KavachApi
-import com.grappus.kavach.data.mappers.*
+import com.grappus.kavach.data.mappers.NewUserRequestBodyMapper
+import com.grappus.kavach.data.mappers.OtpRequestMapper
+import com.grappus.kavach.data.mappers.OtpVerifiedWrapper
+import com.grappus.kavach.data.mappers.OtpVerifyRequestMapper
+import com.grappus.kavach.data.mappers.UserMapper
 import com.grappus.kavach.domain.ResponseData
 import com.grappus.kavach.domain.model.request_model.NewUserRequestBody
 import com.grappus.kavach.domain.model.request_model.OtpSentRequest
@@ -38,7 +42,11 @@ class AuthRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) :
                 if (authToken != null) {
                     val responseBody = response.body()
                     if (responseBody != null) {
-                        ResponseData.Success(data = OtpVerifiedWrapper(authToken = authToken).fromMap(responseBody))
+                        ResponseData.Success(
+                            data = OtpVerifiedWrapper(authToken = authToken).fromMap(
+                                responseBody
+                            )
+                        )
                     } else {
                         ResponseData.Error(message = "No Response")
                     }
@@ -57,7 +65,8 @@ class AuthRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) :
 
     override suspend fun createNewUser(newUserRequestBody: NewUserRequestBody): ResponseData<User> {
         return try {
-            val response = kavachApi.createNewUser(NewUserRequestBodyMapper().fromMap(newUserRequestBody))
+            val response =
+                kavachApi.createNewUser(NewUserRequestBodyMapper().fromMap(newUserRequestBody))
             if (response.isSuccessful) {
                 val successResult = response.body()
                 if (successResult != null) {
