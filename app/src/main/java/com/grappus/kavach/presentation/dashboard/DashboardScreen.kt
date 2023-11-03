@@ -106,9 +106,6 @@ private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel) {
     }
     Box {
         when {
-//            uiState.isLoading -> {
-//                Log.v("loading","loading")}
-//            uiState.error.isNullOrEmpty() ->{Log.v("error",uiState.error ?: "dont know")}
             uiState.data?.data?.content?.isNotEmpty() == true -> {
                 CardItemList(uiState.data!!.data.content)
             }
@@ -136,7 +133,11 @@ private fun CardItemList(contentList: List<ContentListData>) {
         contentPadding = PaddingValues(top = 20.dp, start = 16.dp, end = 16.dp)
     ) {
         itemsIndexed(contentList) { index, content ->
-            CardItem(heading = content.description, contentType = content.category,imageUrl = content.thumbnail)
+            CardItem(
+                heading = content.description,
+                contentType = content.category,
+                imageUrl = content.thumbnail
+            )
         }
     }
 }
@@ -173,7 +174,7 @@ private fun CardItem(
                         contentDescription = "image",
                         contentScale = ContentScale.Crop,
                         onError = {
-                            Log.v("image error",it.toString())
+                            Log.v("image error", it.toString())
                         }
                     )
                 }

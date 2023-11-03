@@ -44,15 +44,19 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun getAllForYouContent(contentType: String? = null, personalized: Boolean = true) {
+    private fun getAllForYouContent(contentType: String? = null, personalized: Boolean = true) {
         dashboardForYouUiState = dashboardForYouUiState.copy(isLoading = true)
         viewModelScope.launch {
-            val response = contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
+            val response =
+                contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
             dashboardForYouUiState = when (response) {
                 is ResponseData.Success -> {
                     val updatedContents = response.data.data.content.map { content ->
                         val imageUrlResponse =
-                            contentUseCase.getImage(fileName = content.thumbnail, contentType = "thumbnail")
+                            contentUseCase.getImage(
+                                fileName = content.thumbnail,
+                                contentType = "thumbnail"
+                            )
                         content.copy(
                             thumbnail = when (imageUrlResponse) {
                                 is ResponseData.Success -> {
@@ -77,15 +81,19 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun getAllReadUiContent(contentType: String? = null, personalized: Boolean = true) {
+    private fun getAllReadUiContent(contentType: String? = null, personalized: Boolean = true) {
         dashboardReadUiState = dashboardReadUiState.copy(isLoading = true)
         viewModelScope.launch {
-            val response = contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
+            val response =
+                contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
             dashboardReadUiState = when (response) {
                 is ResponseData.Success -> {
                     val updatedContents = response.data.data.content.map { content ->
                         val imageUrlResponse =
-                            contentUseCase.getImage(fileName = content.thumbnail, contentType = "thumbnail")
+                            contentUseCase.getImage(
+                                fileName = content.thumbnail,
+                                contentType = "thumbnail"
+                            )
                         content.copy(
                             thumbnail = when (imageUrlResponse) {
                                 is ResponseData.Success -> {
@@ -110,15 +118,19 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun getAllWatchUiContent(contentType: String? = null, personalized: Boolean = true) {
+    private fun getAllWatchUiContent(contentType: String? = null, personalized: Boolean = true) {
         dashboardWatchUiState = dashboardWatchUiState.copy(isLoading = true)
         viewModelScope.launch {
-            val response = contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
+            val response =
+                contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
             dashboardWatchUiState = when (response) {
                 is ResponseData.Success -> {
                     val updatedContents = response.data.data.content.map { content ->
                         val imageUrlResponse =
-                            contentUseCase.getImage(fileName = content.thumbnail, contentType = "thumbnail")
+                            contentUseCase.getImage(
+                                fileName = content.thumbnail,
+                                contentType = "thumbnail"
+                            )
                         content.copy(
                             thumbnail = when (imageUrlResponse) {
                                 is ResponseData.Success -> {
@@ -144,15 +156,19 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun getAllListenUiContent(contentType: String? = null, personalized: Boolean = true) {
+    private fun getAllListenUiContent(contentType: String? = null, personalized: Boolean = true) {
         dashboardListenUiState = dashboardListenUiState.copy(isLoading = true)
         viewModelScope.launch {
-            val response = contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
+            val response =
+                contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
             dashboardListenUiState = when (response) {
                 is ResponseData.Success -> {
                     val updatedContents = response.data.data.content.map { content ->
                         val imageUrlResponse =
-                            contentUseCase.getImage(fileName = content.thumbnail, contentType = "thumbnail")
+                            contentUseCase.getImage(
+                                fileName = content.thumbnail,
+                                contentType = "thumbnail"
+                            )
                         content.copy(
                             thumbnail = when (imageUrlResponse) {
                                 is ResponseData.Success -> {
