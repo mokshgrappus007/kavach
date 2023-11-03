@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,19 +23,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults.cardElevation
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -110,6 +115,10 @@ private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel, na
             uiState.data?.data?.content?.isNotEmpty() == true -> {
                 CardItemList(uiState.data!!.data.content , navController = navController)
             }
+
+            else -> Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator()
+            }
         }
         Box(
             Modifier
@@ -129,9 +138,15 @@ private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel, na
 }
 
 @Composable
-private fun CardItemList(contentList: List<ContentListData>, navController: NavController) {
+private fun CardItemList(contentList: List<ContentListData>, selectedIndex: State<Int>, navController: NavController) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(key1 = selectedIndex.value) {
+        listState.animateScrollToItem(0)
+    }
+
     LazyColumn(
-        contentPadding = PaddingValues(top = 20.dp, start = 16.dp, end = 16.dp)
+        state = listState, contentPadding = PaddingValues(top = 20.dp, start = 16.dp, end = 16.dp)
     ) {
         itemsIndexed(contentList) { index, content ->
             val moshi = Moshi.Builder().build()
@@ -151,23 +166,26 @@ private fun CardItemList(contentList: List<ContentListData>, navController: NavC
             )
             val contentStr = jsonAdapter.toJson(contentJson)
             CardItem(
-                heading = content.description,
+                heading = content.title,
                 contentType = content.category,
                 imageUrl = content.thumbnail,
                 modifier = Modifier.clickable {
                     navController.navigate(route =  Screen.DetailScreen.route.replace("{content}", contentStr))
                 }
+                date = content.createdAt
             )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CardItem(
     heading: String,
     contentType: String,
     imageUrl: String? = null,
     modifier: Modifier = Modifier,
+    date: String
 ) {
     Card(
         modifier = modifier
@@ -183,20 +201,15 @@ private fun CardItem(
                     Modifier
                         .fillMaxWidth()
                         .height(156.dp)
-//                        .background(Color.White.copy(alpha = .2F))
                 ) {
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(imageUrl)
-                            .crossfade(true)
-                            .build(),
-                        placeholder = ColorPainter(Color.White),
+                        model = ImageRequest.Builder(LocalContext.current).data(imageUrl)
+                            .crossfade(true).build(),
+                        placeholder = ColorPainter(Color.White.copy(alpha = .2F)),
                         contentDescription = "image",
                         contentScale = ContentScale.Crop,
-                        onError = {
-                            Log.v("image error", it.toString())
-                        }
+                        error = ColorPainter(Color.White.copy(alpha = .2F)),
                     )
                 }
                 Text(
@@ -208,12 +221,13 @@ private fun CardItem(
                         fontFamily = InterFont,
                         color = Color.White,
                         fontWeight = FontWeight.SemiBold,
-                    )
+                    ),
+                    maxLines = 2,
                 )
                 Spacer(Modifier.height(17.dp))
                 Text(
                     modifier = Modifier.padding(start = 18.dp, bottom = 17.dp),
-                    text = "28 Jul ‘23 • 5 min read",
+                    text = "$date • 5 min read",
                     style = TextStyle(
                         fontSize = 14.sp,
                         lineHeight = 24.sp,
@@ -350,6 +364,9 @@ fun TabBar(selectedIndex: State<Int>, onTabChanged: (index: Int) -> Unit) {
 
 @Composable
 fun DashboardNestedScreen(navController: NavController) {
+    val isClicked = remember {
+        mutableStateOf(false)
+    }
     KavachTheme.dark {
         Surface(Modifier.fillMaxSize()) {
             Column {
@@ -360,7 +377,12 @@ fun DashboardNestedScreen(navController: NavController) {
                         contentDescription = "back",
                         colorFilter = ColorFilter.tint(KavachColor.White)
                     )
-                }, onClicked = { navController.popBackStack() })
+                }, onClicked = {
+                    if (!isClicked.value) {
+                        isClicked.value = true
+                        navController.popBackStack()
+                    }
+                })
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Text(text = "Coming Soon", style = MaterialTheme.typography.titleMedium)
                 }
