@@ -13,7 +13,10 @@ import com.grappus.kavach.domain.repository.ContentRepository
 import javax.inject.Inject
 
 class ContentRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) : ContentRepository {
-    override suspend fun getContent(contentType: String, personalized: Boolean): ResponseData<Content> {
+    override suspend fun getContent(
+        contentType: String?,
+        personalized: Boolean
+    ): ResponseData<Content> {
         return try {
             val response = kavachApi.getContent(type = contentType, personalized = personalized)
             if (response.isSuccessful) {
@@ -75,7 +78,6 @@ class ContentRepositoryImpl @Inject constructor(private val kavachApi: KavachApi
                     )
                 }
             } else {
-                val errorResponse = response.errorBody()
                 ResponseData.Error(message = "Unable to get image details")
             }
         } catch (e: Exception) {

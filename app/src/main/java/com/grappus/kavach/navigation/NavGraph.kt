@@ -15,11 +15,11 @@ fun NavGraph(sharedPreferences: SharedPreferences) {
     val navController = rememberNavController()
 
     val authToken = sharedPreferences.getString("AUTH_KEY", "") ?: ""
-    var startDestination: String = Screen.DashboardScreen.route
+    var startDestination: String = Screen.LoginScreen.route
 
-    if (authToken.isNotEmpty()) {
-        startDestination = Screen.DashboardScreen.route
-    }
+//    if (authToken.isNotEmpty()) {
+//        startDestination = Screen.DashboardScreen.route
+//    }
 
     NavHost(navController = navController, startDestination = startDestination) {
         composable(route = Screen.LoginScreen.route) {

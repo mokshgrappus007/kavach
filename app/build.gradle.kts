@@ -98,4 +98,7 @@ dependencies {
 
 //    shared Pref
     implementation(libs.security.crypto)
+
+//    coil
+    implementation(libs.coil.compose)
 }

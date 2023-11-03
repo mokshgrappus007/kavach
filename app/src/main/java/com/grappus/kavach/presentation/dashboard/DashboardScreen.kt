@@ -1,5 +1,6 @@
 package com.grappus.kavach.presentation.dashboard
 
+import android.util.Log
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
@@ -27,7 +29,6 @@ import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -39,20 +40,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.grappus.kavach.R
+import com.grappus.kavach.domain.model.response_model.ContentListData
 import com.grappus.kavach.navigation.Screen
 import com.grappus.kavach.presentation.common.KavachIconButton
 import com.grappus.kavach.ui.theme.InterFont
@@ -61,7 +68,7 @@ import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.LuckiestGuyFont
 
 @Composable
-fun DashboardScreen(navController: NavController) {
+fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel = hiltViewModel()) {
     KavachTheme.dark {
         Surface(Modifier.fillMaxSize()) {
             val selectedIndex = rememberSaveable { mutableIntStateOf(0) }
@@ -72,14 +79,21 @@ fun DashboardScreen(navController: NavController) {
                 TabBar(selectedIndex, onTabChanged = {
                     selectedIndex.intValue = it
                 })
-                TabBody(selectedIndex)
+                TabBody(selectedIndex, viewModel)
             }
         }
     }
 }
 
 @Composable
-private fun TabBody(selectedIndex: State<Int>) {
+private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel) {
+    var uiState = viewModel.dashboardForYouUiState
+    when (selectedIndex.value) {
+        0 -> uiState = viewModel.dashboardForYouUiState
+        1 -> uiState = viewModel.dashboardReadUiState
+        2 -> uiState = viewModel.dashboardWatchUiState
+        3 -> uiState = viewModel.dashboardListenUiState
+    }
     val topGradient = remember {
         Brush.verticalGradient(
             colors = listOf(KavachColor.RaisinBlack, Color.Transparent),
@@ -91,11 +105,12 @@ private fun TabBody(selectedIndex: State<Int>) {
         )
     }
     Box {
-        LazyColumn(
-            contentPadding = PaddingValues(top = 20.dp, start = 16.dp, end = 16.dp)
-        ) {
-            items(10) { _ ->
-                CardItem()
+        when {
+//            uiState.isLoading -> {
+//                Log.v("loading","loading")}
+//            uiState.error.isNullOrEmpty() ->{Log.v("error",uiState.error ?: "dont know")}
+            uiState.data?.data?.content?.isNotEmpty() == true -> {
+                CardItemList(uiState.data!!.data.content)
             }
         }
         Box(
@@ -116,7 +131,22 @@ private fun TabBody(selectedIndex: State<Int>) {
 }
 
 @Composable
-private fun CardItem() {
+private fun CardItemList(contentList: List<ContentListData>) {
+    LazyColumn(
+        contentPadding = PaddingValues(top = 20.dp, start = 16.dp, end = 16.dp)
+    ) {
+        itemsIndexed(contentList) { index, content ->
+            CardItem(heading = content.description, contentType = content.category,imageUrl = content.thumbnail)
+        }
+    }
+}
+
+@Composable
+private fun CardItem(
+    heading: String,
+    contentType: String,
+    imageUrl: String? = null,
+) {
     Card(
         modifier = Modifier
             .padding(bottom = 15.dp)
@@ -131,11 +161,25 @@ private fun CardItem() {
                     Modifier
                         .fillMaxWidth()
                         .height(156.dp)
-                        .background(Color.White.copy(alpha = .2F))
-                )
+//                        .background(Color.White.copy(alpha = .2F))
+                ) {
+                    AsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(imageUrl)
+                            .crossfade(true)
+                            .build(),
+                        placeholder = ColorPainter(Color.White),
+                        contentDescription = "image",
+                        contentScale = ContentScale.Crop,
+                        onError = {
+                            Log.v("image error",it.toString())
+                        }
+                    )
+                }
                 Text(
                     modifier = Modifier.padding(18.dp, 26.dp, 23.dp),
-                    text = "These are the 10 ways to rejection proof yourself!",
+                    text = heading,
                     style = TextStyle(
                         fontSize = 18.sp,
                         lineHeight = 24.sp,
@@ -173,7 +217,7 @@ private fun CardItem() {
                         ), contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "BULLYING", style = TextStyle(
+                        text = contentType, style = TextStyle(
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
                             fontFamily = LuckiestGuyFont,
