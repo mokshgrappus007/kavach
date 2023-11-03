@@ -1,60 +1,30 @@
 package com.grappus.kavach.presentation.dashboard
 
-import android.util.Log
+import android.net.Uri
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
-import androidx.compose.material3.Card
+import androidx.compose.material3.*
 import androidx.compose.material3.CardDefaults.cardElevation
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -71,6 +41,7 @@ import com.grappus.kavach.ui.theme.InterFont
 import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.LuckiestGuyFont
+import com.squareup.moshi.Moshi
 
 @Composable
 fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel = hiltViewModel()) {
@@ -84,14 +55,14 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
                 TabBar(selectedIndex, onTabChanged = {
                     selectedIndex.intValue = it
                 })
-                TabBody(selectedIndex, viewModel)
+                TabBody(selectedIndex, viewModel, navController = navController)
             }
         }
     }
 }
 
 @Composable
-private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel) {
+private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel, navController: NavController) {
     var uiState = viewModel.dashboardForYouUiState
     when (selectedIndex.value) {
         0 -> uiState = viewModel.dashboardForYouUiState
@@ -112,7 +83,7 @@ private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel) {
     Box {
         when {
             uiState.data?.data?.content?.isNotEmpty() == true -> {
-                CardItemList(uiState.data!!.data.content, selectedIndex)
+                CardItemList(uiState.data!!.data.content, selectedIndex = selectedIndex, navController = navController)
             }
 
             else -> Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
@@ -137,7 +108,7 @@ private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel) {
 }
 
 @Composable
-private fun CardItemList(contentList: List<ContentListData>, selectedIndex: State<Int>) {
+private fun CardItemList(contentList: List<ContentListData>, selectedIndex: State<Int>, navController: NavController) {
     val listState = rememberLazyListState()
 
     LaunchedEffect(key1 = selectedIndex.value) {
@@ -147,27 +118,46 @@ private fun CardItemList(contentList: List<ContentListData>, selectedIndex: Stat
     LazyColumn(
         state = listState, contentPadding = PaddingValues(top = 20.dp, start = 16.dp, end = 16.dp)
     ) {
-        itemsIndexed(contentList) { _, content ->
+        itemsIndexed(contentList) { index, content ->
+            val moshi = Moshi.Builder().build()
+            val jsonAdapter = moshi.adapter(ContentListData::class.java).lenient()
+            val contentJson = ContentListData(
+                id = content.id,
+                category = content.category,
+                contentKey = content.contentKey,
+                contentType = content.contentType,
+                createdAt = content.createdAt,
+                description = content.description,
+                isPortrait = content.isPortrait,
+                readTime = content.readTime,
+                thumbnail = Uri.encode(content.thumbnail),
+                title = content.title,
+                updatedAt = content.updatedAt
+            )
+            val contentStr = jsonAdapter.toJson(contentJson)
             CardItem(
                 heading = content.title,
                 contentType = content.category,
                 imageUrl = content.thumbnail,
+                modifier = Modifier.clickable {
+                    navController.navigate(route = Screen.DetailScreen.route.replace("{content}", contentStr))
+                },
                 date = content.createdAt
             )
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CardItem(
+    modifier: Modifier = Modifier,
     heading: String,
     contentType: String,
     imageUrl: String? = null,
     date: String
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(bottom = 15.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(size = 12.dp)), elevation = cardElevation(
