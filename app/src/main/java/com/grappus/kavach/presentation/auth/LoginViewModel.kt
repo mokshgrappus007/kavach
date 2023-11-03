@@ -19,6 +19,8 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase) :
     var phoneTextState by mutableStateOf("")
         private set
 
+    val isLoginInProgress = mutableStateOf(false)
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
@@ -39,21 +41,24 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase) :
         }
     }
 
-    fun sendOtp(phoneNumber: String) {
+    private fun sendOtp(phoneNumber: String) {
+        isLoginInProgress.value = true
         viewModelScope.launch {
             when (val response = authUseCase.sendOtp(phoneNumber = phoneNumber)) {
                 is ResponseData.Success -> {
                     verifyOtp(otp = "9999", phoneNumber = phoneNumber)
+                    isLoginInProgress.value = false
                 }
 
                 is ResponseData.Error -> {
                     _eventFlow.emit(UiEvent.ShowSnackbar(message = response.message))
+                    isLoginInProgress.value = false
                 }
             }
         }
     }
 
-    fun verifyOtp(otp: String, phoneNumber: String) {
+    private fun verifyOtp(otp: String, phoneNumber: String) {
         viewModelScope.launch {
             when (val response = authUseCase.verifyOtp(phoneNumber = phoneNumber, otp = otp)) {
                 is ResponseData.Success -> {
