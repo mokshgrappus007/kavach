@@ -1,9 +1,10 @@
 package com.grappus.kavach.presentation.read
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,44 +19,55 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.grappus.kavach.R
+import com.grappus.kavach.domain.model.response_model.ContentListData
+import com.grappus.kavach.presentation.dashboard.DashboardViewModel
 import com.grappus.kavach.ui.theme.InterFont
 import com.grappus.kavach.ui.theme.KavachTheme
 
 
 @Composable
-fun ReadScreen(navController: NavController) {
-    KavachTheme(KavachTheme.darkColorScheme, true) {
+fun DetailScreen(navController: NavController, content: ContentListData) {
+
+    KavachTheme.dark {
         Surface(Modifier.fillMaxSize()) {
-            ReadScreenBody(navController)
+            DetailScreenBody(navController, content)
         }
     }
 }
 
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ReadScreenBody(navController: NavController) {
+fun DetailScreenBody(navController: NavController, content: ContentListData) {
 
 
     val fabItems = listOf(
@@ -77,107 +89,126 @@ fun ReadScreenBody(navController: NavController) {
     val scrollState = rememberScrollState()
 
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                color = Color(0xFF0b0a07)
+    Scaffold(
+        floatingActionButton = { BottomFAB(items = fabItems) },
+        content = {
+            Scaffold(
+                floatingActionButton = { BottomFAB(items = fabItems) }
+            ) {
 
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-//        Image(
-//            painter = painterResource(id = R.drawable.read_bg),
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .offset { IntOffset(0, -scrollState.value) },
-//            contentDescription = "Background Image",
-//            contentScale = ContentScale.Crop
-//        )
+                Box(modifier = Modifier.fillMaxSize().background(color = Color.Black)){
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(content.thumbnail)
+                            .crossfade(true)
+                            .build(),
+                        placeholder = ColorPainter(Color.White),
+                        contentDescription = "Background Image",
+                        contentScale = ContentScale.Crop,
+                        onError = {
+                            Log.v("image error", it.toString())
+                        },
+                        modifier = Modifier
+                            .height(700.dp)
+                            .drawWithCache {
+                                val gradient = Brush.verticalGradient(
+                                    colors = listOf(Color.Transparent, Color.Black),
+                                    startY = 300f,
+                                    endY = size.height
+                                )
+                                onDrawWithContent {
+                                    drawContent()
+                                    drawRect(gradient, blendMode = BlendMode.Multiply)
+                                }
+                            }
+                    )
+                }
 
 
-    }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(state = scrollState),
-        verticalArrangement = Arrangement.Top
-    ) {
-        FloatingActionButton(onClick = { navController.popBackStack() },
-            elevation = FloatingActionButtonDefaults.elevation(0.dp),
-            modifier = Modifier.padding(top = 5.dp, start = 20.dp),
-            containerColor = Color.White.copy(alpha = 0.4f),
-            contentColor = Color.White,
-            shape = CircleShape,
-            content = {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = "Back Arrow"
-                )
-            })
-        Text(
-            modifier = Modifier
-                .padding(top = 400.dp, start = 20.dp, end = 50.dp)
-                .padding(end = 50.dp),
-            text = "These are the 10 ways to rejection proof yourself!",
-            style = TextStyle(
-                fontFamily = InterFont,
-                fontWeight = FontWeight.Bold,
-                fontSize = 28.sp,
-                lineHeight = 34.sp,
-                color = Color.White
-            )
-        )
-        Text(
-            modifier = Modifier.padding(top = 13.dp, start = 20.dp, end = 40.dp),
-            text = "Gear up to be Rejection-Proof! Check out the super cool article \"Crush Rejection with These 10 Awesome Tips!\" Learn how to bounce back like a champ, embrace feedback, and stay positive. With these epic techniques, you'll become a rejection-fighting superstar, ready to conquer any challenge! Let's rock it!",
-            style = TextStyle(
-                fontFamily = InterFont,
-                fontWeight = FontWeight.Normal,
-                fontSize = 18.sp,
-                lineHeight = 30.sp,
-                letterSpacing = 0.1.sp,
-                color = Color.White.copy(alpha = 0.5f)
-            )
-        )
 
-        BottomFAB(items = fabItems)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(state = scrollState),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    FloatingActionButton(onClick = { navController.popBackStack() },
+                        elevation = FloatingActionButtonDefaults.elevation(0.dp),
+                        modifier = Modifier.padding(top = 5.dp, start = 20.dp),
+                        containerColor = Color.Black.copy(alpha = 0.4f),
+                        contentColor = Color.White,
+                        shape = CircleShape,
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowLeft,
+                                contentDescription = "Back Arrow"
+                            )
+                        })
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 400.dp, start = 20.dp, end = 50.dp)
+                            .padding(end = 50.dp),
+                        text = content.title,
+                        style = TextStyle(
+                            fontFamily = InterFont,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 28.sp,
+                            lineHeight = 34.sp,
+                            color = Color.White
+                        )
+                    )
+                    Text(
+                        modifier = Modifier.padding(top = 13.dp, start = 20.dp, end = 40.dp),
+                        text = content.description,
+                        style = TextStyle(
+                            fontFamily = InterFont,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 18.sp,
+                            lineHeight = 30.sp,
+                            letterSpacing = 0.1.sp,
+                            color = Color.White.copy(alpha = 0.5f)
+                        )
+                    )
 
-        Text(
-            "Scroll to deep dive",
-            style = TextStyle(
-                fontFamily = InterFont,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 30.sp,
-                letterSpacing = 0.1.sp,
-                color = Color.White.copy(alpha = 0.5f)
-            ),
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .align(CenterHorizontally),
-        )
+                    Text(
+                        "Scroll to deep dive",
+                        style = TextStyle(
+                            fontFamily = InterFont,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            lineHeight = 30.sp,
+                            letterSpacing = 0.1.sp,
+                            color = Color.White.copy(alpha = 0.5f)
+                        ),
+                        modifier = Modifier
+                            .padding(top = 20.dp)
+                            .align(CenterHorizontally),
+                    )
 
-        Spacer(modifier = Modifier.height(50.dp))
+                    Spacer(modifier = Modifier.height(50.dp))
 
-        Text(
-            "Rejection is a part of life, but it doesn't have to bring you down! By equipping yourself with the right tools, you can become rejection-proof and bounce back stronger than ever. Here are 10 awesome tips to help you conquer rejection and embrace success!\n",
-            style = TextStyle(
-                fontFamily = InterFont,
-                fontWeight = FontWeight.Normal,
-                fontSize = 18.sp,
-                lineHeight = 30.sp,
-                letterSpacing = 0.1.sp,
-                color = Color.White.copy(alpha = 0.5f)
-            ),
-            modifier = Modifier
-                .align(CenterHorizontally)
-                .padding(start = 20.dp, end = 30.dp),
-        )
+                    Text(
+                        content.description,
+                        style = TextStyle(
+                            fontFamily = InterFont,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 18.sp,
+                            lineHeight = 30.sp,
+                            letterSpacing = 0.1.sp,
+                            color = Color.White.copy(alpha = 0.5f)
+                        ),
+                        modifier = Modifier
+                            .align(CenterHorizontally)
+                            .padding(start = 20.dp, end = 30.dp),
+                    )
 
-        Spacer(modifier = Modifier.height(60.dp))
+                    Spacer(modifier = Modifier.height(60.dp))
 
-    }
+                }
+            }
+        }
+    )
 
 
 }
@@ -236,7 +267,7 @@ fun BottomFAB(
             onClick = {
                 isExpanded = !isExpanded
             },
-            modifier = Modifier.graphicsLayer{rotationZ = rotate},
+            modifier = Modifier.graphicsLayer { rotationZ = rotate },
             containerColor = Color.White,
             contentColor = Color.Black,
             shape = CircleShape,
@@ -247,11 +278,18 @@ fun BottomFAB(
                         Box(
                             modifier = Modifier.size(30.dp),
                             contentAlignment = Center,
-                        ){
-                            Icon(painterResource(id = R.drawable.read_fab_menu), contentDescription = null)
+                        ) {
+                            Icon(
+                                painterResource(id = R.drawable.read_fab_menu),
+                                contentDescription = null
+                            )
                         }
                     } else {
-                        Icon(imageVector = Icons.Default.Clear, contentDescription = null, modifier = Modifier.size(30.dp))
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp)
+                        )
                     }
                 }
             },

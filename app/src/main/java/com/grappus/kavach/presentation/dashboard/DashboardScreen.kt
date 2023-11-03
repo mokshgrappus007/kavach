@@ -1,5 +1,6 @@
 package com.grappus.kavach.presentation.dashboard
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
@@ -49,7 +50,6 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -66,6 +66,7 @@ import com.grappus.kavach.ui.theme.InterFont
 import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.LuckiestGuyFont
+import com.squareup.moshi.Moshi
 
 @Composable
 fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel = hiltViewModel()) {
@@ -79,14 +80,14 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
                 TabBar(selectedIndex, onTabChanged = {
                     selectedIndex.intValue = it
                 })
-                TabBody(selectedIndex, viewModel)
+                TabBody(selectedIndex, viewModel, navController = navController)
             }
         }
     }
 }
 
 @Composable
-private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel) {
+private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel, navController: NavController) {
     var uiState = viewModel.dashboardForYouUiState
     when (selectedIndex.value) {
         0 -> uiState = viewModel.dashboardForYouUiState
@@ -107,7 +108,7 @@ private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel) {
     Box {
         when {
             uiState.data?.data?.content?.isNotEmpty() == true -> {
-                CardItemList(uiState.data!!.data.content)
+                CardItemList(uiState.data!!.data.content , navController = navController)
             }
         }
         Box(
@@ -128,15 +129,34 @@ private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel) {
 }
 
 @Composable
-private fun CardItemList(contentList: List<ContentListData>) {
+private fun CardItemList(contentList: List<ContentListData>, navController: NavController) {
     LazyColumn(
         contentPadding = PaddingValues(top = 20.dp, start = 16.dp, end = 16.dp)
     ) {
         itemsIndexed(contentList) { index, content ->
+            val moshi = Moshi.Builder().build()
+            val jsonAdapter = moshi.adapter(ContentListData::class.java).lenient()
+            val contentJson = ContentListData(
+                id = content.id,
+                category = content.category,
+                contentKey = content.contentKey,
+                contentType = content.contentType,
+                createdAt = content.createdAt,
+                description = content.description,
+                isPortrait = content.isPortrait,
+                readTime = content.readTime,
+                thumbnail =  Uri.encode(content.thumbnail),
+                title = content.title,
+                updatedAt = content.updatedAt
+            )
+            val contentStr = jsonAdapter.toJson(contentJson)
             CardItem(
                 heading = content.description,
                 contentType = content.category,
-                imageUrl = content.thumbnail
+                imageUrl = content.thumbnail,
+                modifier = Modifier.clickable {
+                    navController.navigate(route =  Screen.DetailScreen.route.replace("{content}", contentStr))
+                }
             )
         }
     }
@@ -147,9 +167,10 @@ private fun CardItem(
     heading: String,
     contentType: String,
     imageUrl: String? = null,
+    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(bottom = 15.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(size = 12.dp)), elevation = cardElevation(
