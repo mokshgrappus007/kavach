@@ -10,7 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -40,14 +45,11 @@ fun LoginScreen(
                 }
 
                 is LoginViewModel.UiEvent.Navigate -> {
-                    navController.navigate(
-                        route = Screen.DashboardScreen.route,
-                        builder = {
-                            popUpTo(Screen.LoginScreen.route) {
-                                inclusive = true
-                            }
+                    navController.navigate(route = Screen.DashboardScreen.route, builder = {
+                        popUpTo(Screen.LoginScreen.route) {
+                            inclusive = true
                         }
-                    )
+                    })
                 }
             }
         }
@@ -59,32 +61,29 @@ fun LoginScreen(
             floatingActionButton = {
                 FloatingActionButton(
                     containerColor = KavachColor.CornSilk,
-                    modifier = Modifier
-                        .padding(
-                            horizontal = 20.dp,
-                            vertical = 10.dp
-                        ),
+                    modifier = Modifier.padding(
+                        horizontal = 20.dp, vertical = 10.dp
+                    ),
                     onClick = {},
                     elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
                 ) {
-                    Card(
-                        shape = RoundedCornerShape(50.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = KavachColor.vampireBlack
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                viewModel.onEvent(LoginScreenEvent.SendOtp(phoneNumberState))
-                            }
-                    ) {
+                    Card(shape = RoundedCornerShape(50.dp), colors = CardDefaults.cardColors(
+                        containerColor = KavachColor.vampireBlack
+                    ), modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            viewModel.onEvent(LoginScreenEvent.SendOtp(phoneNumberState))
+                        }) {
                         Box(
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(vertical = 15.dp)
 
                         ) {
-                            Text(
+                            if (viewModel.isLoginInProgress.value) CircularProgressIndicator(
+                                Modifier.size(24.dp), color = Color.White
+                            )
+                            else Text(
                                 text = "Continue",
                                 style = Typography.bodyLarge.copy(
                                     fontSize = 16.sp,
@@ -106,8 +105,7 @@ fun LoginScreen(
             ) {
                 Box(
                     modifier = Modifier.padding(
-                        horizontal = 20.dp,
-                        vertical = 25.dp
+                        horizontal = 20.dp, vertical = 25.dp
                     ),
                 ) {
                     Column {
@@ -132,8 +130,7 @@ fun LoginScreen(
                         Box(Modifier.height(25.dp))
                         Box(Modifier.width(240.dp)) {
                             Text(
-                                text = "YOUR NUMBER?",
-                                style = Typography.titleLarge.copy(
+                                text = "YOUR NUMBER?", style = Typography.titleLarge.copy(
                                     fontSize = 39.sp,
                                     fontWeight = FontWeight.Bold,
                                     fontFamily = BruleFont,
