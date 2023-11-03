@@ -11,6 +11,35 @@ class GetAllContent(
         contentType: String? = null,
         personalized: Boolean = false
     ): ResponseData<Content> {
-        return contentRepository.getContent(contentType = contentType, personalized)
+        val response = contentRepository.getContent(contentType = contentType, personalized)
+        return when (response) {
+            is ResponseData.Success -> {
+                val updatedContents = response.data.data.content.map { content ->
+                    val imageUrlResponse =
+                        contentRepository.getImage(
+                            fileName = content.thumbnail,
+                            contentType = "thumbnail"
+                        )
+                    content.copy(
+                        thumbnail = when (imageUrlResponse) {
+                            is ResponseData.Success -> {
+                                imageUrlResponse.data.data.downloadURL
+                            }
+
+                            is ResponseData.Error -> {
+                                ""
+                            }
+                        }
+                    )
+                }
+                val updatedResponse =
+                    response.data.copy(data = response.data.data.copy(content = updatedContents))
+                ResponseData.Success(data = updatedResponse)
+            }
+
+            is ResponseData.Error -> {
+                ResponseData.Error(message = response.message)
+            }
+        }
     }
 }
