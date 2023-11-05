@@ -7,12 +7,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.grappus.kavach.domain.model.response_model.ContentListData
 import com.grappus.kavach.presentation.auth.LoginScreen
 import com.grappus.kavach.presentation.dashboard.DashboardNestedScreen
 import com.grappus.kavach.presentation.dashboard.DashboardScreen
-import com.grappus.kavach.presentation.read.DetailScreen
-import com.squareup.moshi.Moshi
+import com.grappus.kavach.presentation.detail.DetailScreen
 
 @Composable
 fun NavGraph(sharedPreferences: SharedPreferences) {
@@ -36,19 +34,31 @@ fun NavGraph(sharedPreferences: SharedPreferences) {
             DashboardNestedScreen(navController = navController)
         }
         composable(
-            route = Screen.DetailScreen.route,
-            arguments = listOf(navArgument("content") {
-                type = NavType.StringType
-                defaultValue = ""
-            })
+            route = Screen.DetailScreen.route + "/{thumbnail}/{title}/{description}",
+            arguments = listOf(
+                navArgument("thumbnail") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = true
+                },
+                navArgument("title") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = false
+                },
+                navArgument("description") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = false
+                },
+            )
         ) { backStackEntry ->
-            val contentJson = backStackEntry.arguments?.getString("content")
-            val moshi = Moshi.Builder().build()
-            val jsonAdapter = moshi.adapter(ContentListData::class.java).lenient()
-            val contentObj = jsonAdapter.fromJson(contentJson.toString())
-            if (contentObj != null) {
-                DetailScreen(navController = navController, content = contentObj)
-            }
+            DetailScreen(
+                navController = navController,
+                thumbnail = backStackEntry.arguments?.getString("thumbnail") ?: "",
+                title = backStackEntry.arguments?.getString("title") ?: "",
+                description = backStackEntry.arguments?.getString("description") ?: "",
+            )
         }
 
 

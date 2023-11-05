@@ -4,7 +4,10 @@ import android.net.Uri
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -41,7 +44,6 @@ import com.grappus.kavach.ui.theme.InterFont
 import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.LuckiestGuyFont
-import com.squareup.moshi.Moshi
 
 @Composable
 fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel = hiltViewModel()) {
@@ -119,28 +121,18 @@ private fun CardItemList(contentList: List<ContentListData>, selectedIndex: Stat
         state = listState, contentPadding = PaddingValues(top = 20.dp, start = 16.dp, end = 16.dp)
     ) {
         itemsIndexed(contentList) { index, content ->
-            val moshi = Moshi.Builder().build()
-            val jsonAdapter = moshi.adapter(ContentListData::class.java).lenient()
-            val contentJson = ContentListData(
-                id = content.id,
-                category = content.category,
-                contentKey = content.contentKey,
-                contentType = content.contentType,
-                createdAt = content.createdAt,
-                description = content.description,
-                isPortrait = content.isPortrait,
-                readTime = content.readTime,
-                thumbnail = Uri.encode(content.thumbnail),
-                title = content.title,
-                updatedAt = content.updatedAt
-            )
-            val contentStr = jsonAdapter.toJson(contentJson)
             CardItem(
                 heading = content.title,
                 contentType = content.category,
                 imageUrl = content.thumbnail,
                 modifier = Modifier.clickable {
-                    navController.navigate(route = Screen.DetailScreen.route.replace("{content}", contentStr))
+                    navController.navigate(
+                        Screen.DetailScreen.withArgs(
+                            content.thumbnail,
+                            content.title,
+                            content.description,
+                        )
+                    )
                 },
                 date = content.createdAt
             )
@@ -173,8 +165,10 @@ private fun CardItem(
                 ) {
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
-                        model = ImageRequest.Builder(LocalContext.current).data(imageUrl)
-                            .crossfade(true).build(),
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(Uri.decode(imageUrl))
+                            .crossfade(true)
+                            .build(),
                         placeholder = ColorPainter(Color.White.copy(alpha = .2F)),
                         contentDescription = "image",
                         contentScale = ContentScale.Crop,

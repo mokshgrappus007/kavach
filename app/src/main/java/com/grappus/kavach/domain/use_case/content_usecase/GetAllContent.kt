@@ -1,5 +1,6 @@
 package com.grappus.kavach.domain.use_case.content_usecase
 
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.grappus.kavach.domain.ResponseData
@@ -34,11 +35,11 @@ class GetAllContent(
                     content.copy(
                         thumbnail = when (imageUrlResponse) {
                             is ResponseData.Success -> {
-                                imageUrlResponse.data.data.downloadURL
+                                Uri.encode(imageUrlResponse.data.data.downloadURL)
                             }
 
                             is ResponseData.Error -> {
-                                ""
+                                "null"
                             }
                         },
                         createdAt = DateTimeFormatter.ofPattern("dd MMM ''yy").format(Instant.parse(content.createdAt).atZone(ZoneId.of("UTC")))
