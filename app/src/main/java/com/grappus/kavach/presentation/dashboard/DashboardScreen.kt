@@ -73,14 +73,6 @@ private fun TabBody(
     viewModel: DashboardViewModel,
     navController: NavController
 ) {
-//    var uiState = viewModel.dashboardForYouUiState
-//    when (selectedIndex.value) {
-//        0 -> uiState = viewModel.dashboardForYouUiState
-//        1 -> uiState = viewModel.dashboardReadUiState
-//        2 -> uiState = viewModel.dashboardWatchUiState
-//        3 -> uiState = viewModel.dashboardListenUiState
-//    }
-
     val topGradient = remember {
         Brush.verticalGradient(
             colors = listOf(KavachColor.RaisinBlack, Color.Transparent),
@@ -92,15 +84,6 @@ private fun TabBody(
         )
     }
     Box {
-//        when {
-//            uiState.data?.isNotEmpty() == true -> {
-//                CardItemList(uiState.data!!, selectedIndex = selectedIndex, navController = navController)
-//            }
-//
-//            else -> Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-//                CircularProgressIndicator()
-//            }
-//        }
         CardItemList(
             viewModel = viewModel,
             selectedIndex = selectedIndex,
