@@ -9,9 +9,9 @@ lifecycle-runtime-ktx = "2.6.2"
 activity-compose = "1.8.0"
 compose-bom = "2023.10.01"
 lifecycle-viewmodel-compose = "2.6.2"
-navigation-compose = "2.7.4"
+navigation-compose = "2.7.5"
 hilt-android = "2.48.1"
-androidx-hilt = "1.0.0"
+androidx-hilt = "1.1.0"
 hilt-lifecycle-viewmodel = "1.0.0-alpha03"
 coroutines = "1.7.3"
 retrofit = "2.9.0"
@@ -19,6 +19,7 @@ okhttp = "5.0.0-alpha.11"
 moshi = "1.15.0"
 security-crypto = "1.1.0-alpha06"
 coil-compose = "2.4.0"
+paging = "3.2.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -62,6 +63,9 @@ moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-code
 security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
 
 coil-compose = {group = "io.coil-kt", name = "coil-compose",version.ref="coil-compose"}
+
+paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "paging" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

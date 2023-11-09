@@ -3,19 +3,6 @@ package com.grappus.kavach.domain.model.response_model
 import com.squareup.moshi.JsonClass
 
 data class Content(
-    val data: ContentData
-)
-
-data class ContentData(
-    val content: List<ContentListData>,
-    val count: Int,
-    val hasNext: Boolean,
-    val hasPrevious: Boolean,
-    val totalPages: Int
-)
-
-@JsonClass(generateAdapter = true)
-data class ContentListData(
     val id: String,
     val category: String,
     val contentKey: String,

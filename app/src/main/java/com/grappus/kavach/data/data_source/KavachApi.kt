@@ -23,9 +23,9 @@ interface KavachApi {
     @GET("user/content/all")
     suspend fun getContent(
         @Query("page") page: Int = 1,
-        @Query("size") size: Int = 10,
+        @Query("size") size: Int = 15,
         @Query("type") type: String ?= null,
-        @Query("personalized") personalized : Boolean ?= null
+        @Query("personalized") personalized : Boolean = true
     ): Response<ContentDto>
 
     @GET("user/content/{contentId}")

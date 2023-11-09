@@ -12,13 +12,18 @@ import com.grappus.kavach.domain.model.response_model.Image
 import com.grappus.kavach.domain.repository.ContentRepository
 import javax.inject.Inject
 
-class ContentRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) : ContentRepository {
+class ContentRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) :
+    ContentRepository {
     override suspend fun getContent(
+        page: Int,
         contentType: String?,
-        personalized: Boolean
-    ): ResponseData<Content> {
+    ): ResponseData<List<Content>> {
         return try {
-            val response = kavachApi.getContent(type = contentType, personalized = personalized)
+            val response =
+                kavachApi.getContent(
+                    type = contentType,
+                    page = page
+                )
             if (response.isSuccessful) {
                 val successResult = response.body()
                 if (successResult != null) {
@@ -31,7 +36,6 @@ class ContentRepositoryImpl @Inject constructor(private val kavachApi: KavachApi
                     )
                 }
             } else {
-                val errorResponse = response.errorBody()
                 ResponseData.Error(message = "Unable to get content details")
             }
         } catch (e: Exception) {
@@ -64,7 +68,8 @@ class ContentRepositoryImpl @Inject constructor(private val kavachApi: KavachApi
 
     override suspend fun getImage(fileName: String, contentType: String): ResponseData<Image> {
         return try {
-            val imageRequestBodyDto = ImageRequestBodyDto(fileName = fileName, contentType = contentType)
+            val imageRequestBodyDto =
+                ImageRequestBodyDto(fileName = fileName, contentType = contentType)
             val response = kavachApi.getContentImage(imageRequestBodyDto = imageRequestBodyDto)
             if (response.isSuccessful) {
                 val successResult = response.body()

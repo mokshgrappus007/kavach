@@ -2,120 +2,84 @@ package com.grappus.kavach.presentation.dashboard
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.grappus.kavach.domain.ResponseData
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.grappus.kavach.domain.model.response_model.Content
 import com.grappus.kavach.domain.use_case.content_usecase.ContentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val contentUseCase: ContentUseCase
 ) : ViewModel() {
 
-    var dashboardForYouUiState by mutableStateOf(UiState<Content>())
-        private set
-    var dashboardReadUiState by mutableStateOf(UiState<Content>())
-        private set
-    var dashboardWatchUiState by mutableStateOf(UiState<Content>())
-        private set
-    var dashboardListenUiState by mutableStateOf(UiState<Content>())
-        private set
+    private val _forYouContentFlow = MutableStateFlow<PagingData<Content>>(PagingData.empty())
+    val forYouContentFlow: StateFlow<PagingData<Content>> = _forYouContentFlow
+
+    private val _readContentFlow = MutableStateFlow<PagingData<Content>>(PagingData.empty())
+    val readContentFlow: StateFlow<PagingData<Content>> = _readContentFlow
+
+    private val _watchContentFlow = MutableStateFlow<PagingData<Content>>(PagingData.empty())
+    val watchContentFlow: StateFlow<PagingData<Content>> = _watchContentFlow
+
+    private val _listenContentFlow = MutableStateFlow<PagingData<Content>>(PagingData.empty())
+    val listenContentFlow: StateFlow<PagingData<Content>> = _listenContentFlow
+
 
     init {
+        getForYouContent()
+        getReadContent()
+        getWatchContent()
+        getListenContent()
+    }
+
+    private fun getForYouContent(
+    ) {
         viewModelScope.launch {
-            val getAllForYourContentDeferred = async { getAllForYouContent(personalized = true) }
-            getAllForYourContentDeferred.await()
-
-            val getAllReadContentDeferred = async { getAllReadUiContent(contentType = "TEXT") }
-            getAllReadContentDeferred.await()
-
-            val getAllWatchContentDeferred = async { getAllWatchUiContent(contentType = "VIDEO") }
-            getAllWatchContentDeferred.await()
-
-            val getAllListenContentDeferred = async { getAllListenUiContent(contentType = "AUDIO") }
-            getAllListenContentDeferred.await()
+            contentUseCase.getAllContent(contentType = null)
+                .cachedIn(viewModelScope).collect {
+                    _forYouContentFlow.value = it
+                }
         }
     }
 
-    private fun getAllForYouContent(contentType: String? = null, personalized: Boolean = true) {
-        dashboardForYouUiState = dashboardForYouUiState.copy(isLoading = true)
+    private fun getReadContent(
+        contentType: String? = "TEXT",
+    ) {
         viewModelScope.launch {
-            val response =
-                contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
-            dashboardForYouUiState = when (response) {
-                is ResponseData.Success -> {
-                    dashboardForYouUiState.copy(isLoading = false, data = response.data)
+            contentUseCase.getAllContent(contentType = contentType)
+                .cachedIn(viewModelScope).collect {
+                    _readContentFlow.value = it
                 }
-
-                is ResponseData.Error -> {
-                    dashboardForYouUiState.copy(isLoading = false, error = response.message)
-                }
-            }
         }
     }
 
-    private fun getAllReadUiContent(contentType: String? = null, personalized: Boolean = true) {
-        dashboardReadUiState = dashboardReadUiState.copy(isLoading = true)
+    private fun getWatchContent(
+        contentType: String? = "VIDEO",
+    ) {
         viewModelScope.launch {
-            val response =
-                contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
-            dashboardReadUiState = when (response) {
-                is ResponseData.Success -> {
-                    dashboardForYouUiState.copy(isLoading = false, data = response.data)
+            contentUseCase.getAllContent(contentType = contentType)
+                .cachedIn(viewModelScope).collect {
+                    _watchContentFlow.value = it
                 }
-
-                is ResponseData.Error -> {
-                    dashboardReadUiState.copy(isLoading = false, error = response.message)
-                }
-            }
         }
     }
 
-    private fun getAllWatchUiContent(contentType: String? = null, personalized: Boolean = true) {
-        dashboardWatchUiState = dashboardWatchUiState.copy(isLoading = true)
+    private fun getListenContent(
+        contentType: String? = "AUDIO",
+    ) {
         viewModelScope.launch {
-            val response =
-                contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
-            dashboardWatchUiState = when (response) {
-                is ResponseData.Success -> {
-                    dashboardForYouUiState.copy(isLoading = false, data = response.data)
+            contentUseCase.getAllContent(contentType = contentType)
+                .cachedIn(viewModelScope).collect {
+                    _listenContentFlow.value = it
                 }
-
-                is ResponseData.Error -> {
-                    dashboardWatchUiState.copy(isLoading = false, error = response.message)
-                }
-            }
         }
     }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun getAllListenUiContent(contentType: String? = null, personalized: Boolean = true) {
-        dashboardListenUiState = dashboardListenUiState.copy(isLoading = true)
-        viewModelScope.launch {
-            val response =
-                contentUseCase.getAllContent(contentType = contentType, personalized = personalized)
-            dashboardListenUiState = when (response) {
-                is ResponseData.Success -> {
-                    dashboardForYouUiState.copy(isLoading = false, data = response.data)
-                }
-
-                is ResponseData.Error -> {
-                    dashboardListenUiState.copy(isLoading = false, error = response.message)
-                }
-            }
-        }
-    }
-
 }
-
-data class UiState<T>(
-    val data: T? = null, val isLoading: Boolean = true, val error: String? = null
-)

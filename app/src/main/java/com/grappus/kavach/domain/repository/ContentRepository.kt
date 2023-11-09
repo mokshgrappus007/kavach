@@ -7,9 +7,9 @@ import com.grappus.kavach.domain.model.response_model.Image
 
 interface ContentRepository {
     suspend fun getContent(
-        contentType: String? = null,
-        personalized: Boolean
-    ): ResponseData<Content>
+        page: Int,
+        contentType: String?,
+    ): ResponseData<List<Content>>
 
     suspend fun getContentDetails(contentId: String): ResponseData<ContentDetails>
 

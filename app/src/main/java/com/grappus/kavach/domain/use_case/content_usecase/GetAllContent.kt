@@ -3,11 +3,16 @@ package com.grappus.kavach.domain.use_case.content_usecase
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.grappus.kavach.domain.ResponseData
 import com.grappus.kavach.domain.model.response_model.Content
 import com.grappus.kavach.domain.repository.ContentRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -15,43 +20,36 @@ class GetAllContent(
     private val contentRepository: ContentRepository
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend operator fun invoke(
-        contentType: String? = null,
-        personalized: Boolean = false
-    ): ResponseData<Content> {
-        val dateSt = "2017-04-08T18:39:42Z"
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        val formattedDate = LocalDateTime.parse(dateSt, dateFormatter)
-        val res = DateTimeFormatter.ofPattern("MMMM dd, yyyy | hh:mma").format(formattedDate) //
+    operator fun invoke(
+        contentType: String?,
+    ): Flow<PagingData<Content>> {
 
-        return when (val response = contentRepository.getContent(contentType = contentType, personalized)) {
-            is ResponseData.Success -> {
-                val updatedContents = response.data.data.content.map { content ->
-                    val imageUrlResponse =
-                        contentRepository.getImage(
-                            fileName = content.thumbnail,
-                            contentType = "thumbnail"
-                        )
-                    content.copy(
-                        thumbnail = when (imageUrlResponse) {
-                            is ResponseData.Success -> {
-                                Uri.encode(imageUrlResponse.data.data.downloadURL)
-                            }
+        val pagingSource = ContentPagingSource(
+            contentRepository = contentRepository,
+            contentType = contentType,
+        )
 
-                            is ResponseData.Error -> {
-                                "null"
-                            }
-                        },
-                        createdAt = DateTimeFormatter.ofPattern("dd MMM ''yy").format(Instant.parse(content.createdAt).atZone(ZoneId.of("UTC")))
-                    )
-                }
-                val updatedResponse =
-                    response.data.copy(data = response.data.data.copy(content = updatedContents))
-                ResponseData.Success(data = updatedResponse)
-            }
+        val pager = Pager(
+            config = PagingConfig(10, enablePlaceholders = true),
+            pagingSourceFactory = { pagingSource }
+        )
 
-            is ResponseData.Error -> {
-                ResponseData.Error(message = response.message)
+        return pager.flow.map { pagingData ->
+            pagingData.map { content ->
+                val response = contentRepository.getImage(content.thumbnail, contentType = "thumbnail")
+                content.copy(
+                    thumbnail = when (response) {
+                        is ResponseData.Success -> {
+                            Uri.encode(response.data.data.downloadURL)
+                        }
+
+                        is ResponseData.Error -> {
+                            "null"
+                        }
+                    },
+                    createdAt = DateTimeFormatter.ofPattern("dd MMM ''yy")
+                        .format(Instant.parse(content.createdAt).atZone(ZoneId.of("UTC")))
+                )
             }
         }
     }

@@ -101,4 +101,8 @@ dependencies {
 
 //    coil
     implementation(libs.coil.compose)
+
+//    paging3
+    implementation(libs.paging.runtime.ktx)
+    implementation(libs.paging.compose)
 }
