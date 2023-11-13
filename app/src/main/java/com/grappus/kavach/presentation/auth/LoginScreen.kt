@@ -2,20 +2,39 @@ package com.grappus.kavach.presentation.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,14 +55,14 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val phoneNumberState = viewModel.phoneTextState
-    val snackbarState = remember { SnackbarHostState() }
+    val snackBarState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is LoginViewModel.UiEvent.ShowSnackbar -> {
-                    snackbarState.showSnackbar(message = event.message)
+                    snackBarState.showSnackbar(message = event.message)
                 }
 
                 is LoginViewModel.UiEvent.Navigate -> {
@@ -58,47 +77,44 @@ fun LoginScreen(
     }
 
     KavachTheme.light {
-        Scaffold(
-            snackbarHost = { SnackbarHost(snackbarState) },
-            floatingActionButton = {
-                FloatingActionButton(
-                    containerColor = KavachColor.CornSilk,
-                    modifier = Modifier.padding(
-                        horizontal = 20.dp, vertical = 10.dp
-                    ),
-                    onClick = {},
-                    elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
-                ) {
-                    Card(shape = RoundedCornerShape(50.dp), colors = CardDefaults.cardColors(
-                        containerColor = KavachColor.vampireBlack
-                    ), modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            focusManager.clearFocus()
-                            viewModel.onEvent(LoginScreenEvent.SendOtp(phoneNumberState))
-                        }) {
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(vertical = 15.dp)
+        Scaffold(snackbarHost = { SnackbarHost(snackBarState) }, floatingActionButton = {
+            FloatingActionButton(
+                containerColor = KavachColor.CornSilk,
+                modifier = Modifier.padding(
+                    horizontal = 20.dp, vertical = 10.dp
+                ),
+                onClick = {},
+                elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
+            ) {
+                Card(shape = RoundedCornerShape(50.dp), colors = CardDefaults.cardColors(
+                    containerColor = KavachColor.vampireBlack
+                ), modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        focusManager.clearFocus()
+                        viewModel.onEvent(LoginScreenEvent.SendOtp(phoneNumberState))
+                    }) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(vertical = 15.dp)
 
-                        ) {
-                            if (viewModel.isLoginInProgress.value) CircularProgressIndicator(
-                                Modifier.size(24.dp), color = Color.White
-                            )
-                            else Text(
-                                text = "Continue",
-                                style = Typography.bodyLarge.copy(
-                                    fontSize = 16.sp,
-                                    color = KavachColor.White,
-                                    fontWeight = FontWeight.SemiBold
-                                ),
-                            )
-                        }
+                    ) {
+                        if (viewModel.isLoginInProgress.value) CircularProgressIndicator(
+                            Modifier.size(24.dp), color = Color.White
+                        )
+                        else Text(
+                            text = "Continue",
+                            style = Typography.bodyLarge.copy(
+                                fontSize = 16.sp,
+                                color = KavachColor.White,
+                                fontWeight = FontWeight.SemiBold
+                            ),
+                        )
                     }
                 }
-            },
-            floatingActionButtonPosition = FabPosition.Center
+            }
+        }, floatingActionButtonPosition = FabPosition.Center
         ) { innerPadding ->
             Surface(
                 modifier = Modifier
@@ -223,22 +239,45 @@ fun LoginScreen(
                         Spacer(
                             modifier = Modifier.height(21.dp)
                         )
-                        Box(
-                            Modifier.align(Alignment.CenterHorizontally)
-                        ) {
-                            Text(
-                                text = "Use email instead?",
-                                style = Typography.bodyLarge.copy(
-                                    fontSize = 16.sp,
-                                    color = KavachColor.vampireBlack,
-                                    fontWeight = FontWeight.Medium
-                                ),
-
+                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            Column(
+                            ) {
+                                // Google, Discord, Apple, twitch, Metamask.
+                                LoginOption(
+                                    onClicked = {}, title = "Login with Twitch"
                                 )
+                                LoginOption(
+                                    onClicked = {}, title = "Login with Discord"
+                                )
+                                LoginOption(
+                                    onClicked = {}, title = "Login with Metamask"
+                                )
+                                LoginOption(
+                                    onClicked = {}, title = "Login with Apple"
+                                )
+                                LoginOption(
+                                    onClicked = {}, title = "Login with Google"
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun LoginOption(onClicked: () -> Unit, title: String) {
+    TextButton(
+        modifier = Modifier.padding(bottom = 16.dp),
+        onClick = onClicked,
+    ) {
+        Text(
+            text = title,
+            style = Typography.bodyLarge.copy(
+                fontSize = 16.sp, color = KavachColor.vampireBlack, fontWeight = FontWeight.Medium,
+            ),
+        )
     }
 }
