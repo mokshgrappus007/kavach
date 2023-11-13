@@ -20,6 +20,7 @@ moshi = "1.15.0"
 security-crypto = "1.1.0-alpha06"
 coil-compose = "2.4.0"
 paging = "3.2.1"
+metamask = "0.2.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -62,10 +63,13 @@ moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-code
 
 security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
 
-coil-compose = {group = "io.coil-kt", name = "coil-compose",version.ref="coil-compose"}
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-compose" }
 
 paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "paging" }
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+
+# Metamask
+metamask-android-sdk = { group = "io.metamask.androidsdk", name = "metamask-android-sdk", version.ref = "metamask" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
