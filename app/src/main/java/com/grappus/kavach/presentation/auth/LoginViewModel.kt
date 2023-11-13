@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.grappus.kavach.domain.ErrorType
 import com.grappus.kavach.domain.ResponseData
 import com.grappus.kavach.domain.use_case.auth_usecase.AuthUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,8 +52,10 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase) :
                 }
 
                 is ResponseData.Error -> {
-                    _eventFlow.emit(UiEvent.ShowSnackbar(message = response.message))
-                    isLoginInProgress.value = false
+                    if (response.errorType is ErrorType.Generic) {
+                        _eventFlow.emit(UiEvent.ShowSnackbar(message = response.errorType.message))
+                        isLoginInProgress.value = false
+                    }
                 }
             }
         }
@@ -66,7 +69,9 @@ class LoginViewModel @Inject constructor(private val authUseCase: AuthUseCase) :
                 }
 
                 is ResponseData.Error -> {
-                    _eventFlow.emit(UiEvent.ShowSnackbar(message = response.message))
+                    if (response.errorType is ErrorType.Generic) {
+                        _eventFlow.emit(UiEvent.ShowSnackbar(message = response.errorType.message))
+                    }
                 }
             }
         }

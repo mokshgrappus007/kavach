@@ -1,16 +1,21 @@
 package com.grappus.kavach.presentation.dashboard
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.grappus.kavach.domain.ErrorType
+import com.grappus.kavach.domain.ResponseData
 import com.grappus.kavach.domain.model.response_model.Content
 import com.grappus.kavach.domain.use_case.content_usecase.ContentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,7 +36,6 @@ class DashboardViewModel @Inject constructor(
 
     private val _listenContentFlow = MutableStateFlow<PagingData<Content>>(PagingData.empty())
     val listenContentFlow: StateFlow<PagingData<Content>> = _listenContentFlow
-
 
     init {
         getForYouContent()

@@ -40,16 +40,38 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.grappus.kavach.R
+import com.grappus.kavach.domain.utils.GenericException
+import com.grappus.kavach.domain.utils.UnauthorizedException
 import com.grappus.kavach.navigation.Screen
+import com.grappus.kavach.presentation.auth.LoginViewModel
 import com.grappus.kavach.presentation.common.KavachIconButton
 import com.grappus.kavach.ui.theme.InterFont
 import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.LuckiestGuyFont
+import kotlinx.coroutines.flow.collectLatest
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel = hiltViewModel()) {
+//    LaunchedEffect(key1 = true){
+//        viewModel.eventFlow.collectLatest { event ->
+//            when (event) {
+//                is DashboardViewModel.UiEvent.ShowSnackbar -> {
+//                    snackbarState.showSnackbar(message = event.message)
+//                }
+
+//                is LoginViewModel.UiEvent.Navigate -> {
+//                    navController.navigate(route = Screen.DashboardScreen.route, builder = {
+//                        popUpTo(Screen.LoginScreen.route) {
+//                            inclusive = true
+//                        }
+//                    })
+//                }
+//                else -> {}
+//            }
+//        }
+//    }
     KavachTheme.dark {
         Surface(Modifier.fillMaxSize()) {
             val selectedIndex = rememberSaveable { mutableIntStateOf(0) }
@@ -162,8 +184,23 @@ private fun CardItemList(
                 }
 
                 loadState.refresh is LoadState.Error || loadState.append is LoadState.Error -> {
-                    item {
-                        Text(text = "Error")
+                    val errorState = loadState.refresh as? LoadState.Error ?: loadState.append as LoadState.Error
+
+                    when (val throwable = errorState.error) {
+                        is GenericException -> {
+                            item {
+                                Text(text = "Generic Error: ${throwable.message}")
+                            }
+                        }
+                        is UnauthorizedException -> {
+                            navController.navigate(route = Screen.LoginScreen.route)
+                        }
+                        else -> {
+                            // Handle other exceptions as needed
+                            item {
+                                Text(text = "Unknown Error")
+                            }
+                        }
                     }
                 }
 
@@ -336,8 +373,10 @@ fun TabBar(selectedIndex: State<Int>, onTabChanged: (index: Int) -> Unit) {
                         rotationZ = rotation
                     }
                     .padding(bottom = 4.dp)
-                    .padding(horizontal = 4.dp)) {
-                Text(text = text,
+                    .padding(horizontal = 4.dp),
+            ) {
+                Text(
+                    text = text,
                     color = if (isSelected) KavachColor.Black else KavachColor.White,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
@@ -353,7 +392,8 @@ fun TabBar(selectedIndex: State<Int>, onTabChanged: (index: Int) -> Unit) {
                         .clickable { onTabChanged(index) }
                         .padding(
                             start = 20.dp, top = 10.dp, end = 20.dp, bottom = 10.dp
-                        ))
+                        ),
+                )
             }
         }
     }

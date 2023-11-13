@@ -6,7 +6,6 @@ import com.grappus.kavach.domain.repository.ContentRepository
 import com.grappus.kavach.domain.use_case.auth_usecase.*
 import com.grappus.kavach.domain.use_case.content_usecase.ContentUseCase
 import com.grappus.kavach.domain.use_case.content_usecase.GetAllContent
-import com.grappus.kavach.domain.use_case.content_usecase.GetContentDetail
 import com.grappus.kavach.domain.use_case.content_usecase.GetImageUrl
 import dagger.Module
 import dagger.Provides
@@ -24,8 +23,6 @@ object UseCaseModule {
         return AuthUseCase(
             sendOtp = SendOtp(authRepository),
             verifyOtp = VerifyOtp(authRepository, sharedPreferences),
-            createNewUser = CreateNewUser(authRepository),
-            getCurrentUserDetails = GetCurrentUserDetails(authRepository),
         )
     }
 
@@ -34,7 +31,6 @@ object UseCaseModule {
     fun provideContentUseCase(contentRepository: ContentRepository):ContentUseCase{
         return ContentUseCase(
             getAllContent = GetAllContent(contentRepository),
-            getContentDetail = GetContentDetail(contentRepository),
             getImage = GetImageUrl(contentRepository)
         )
     }
