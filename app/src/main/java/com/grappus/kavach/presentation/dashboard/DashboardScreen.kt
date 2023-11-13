@@ -1,6 +1,8 @@
 package com.grappus.kavach.presentation.dashboard
 
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
@@ -10,7 +12,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,10 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.grappus.kavach.R
-import com.grappus.kavach.domain.model.response_model.ContentListData
 import com.grappus.kavach.navigation.Screen
 import com.grappus.kavach.presentation.common.KavachIconButton
 import com.grappus.kavach.ui.theme.InterFont
@@ -45,6 +47,7 @@ import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.LuckiestGuyFont
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel = hiltViewModel()) {
     KavachTheme.dark {
@@ -63,15 +66,13 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel, navController: NavController) {
-    var uiState = viewModel.dashboardForYouUiState
-    when (selectedIndex.value) {
-        0 -> uiState = viewModel.dashboardForYouUiState
-        1 -> uiState = viewModel.dashboardReadUiState
-        2 -> uiState = viewModel.dashboardWatchUiState
-        3 -> uiState = viewModel.dashboardListenUiState
-    }
+private fun TabBody(
+    selectedIndex: State<Int>,
+    viewModel: DashboardViewModel,
+    navController: NavController
+) {
     val topGradient = remember {
         Brush.verticalGradient(
             colors = listOf(KavachColor.RaisinBlack, Color.Transparent),
@@ -83,15 +84,11 @@ private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel, na
         )
     }
     Box {
-        when {
-            uiState.data?.data?.content?.isNotEmpty() == true -> {
-                CardItemList(uiState.data!!.data.content, selectedIndex = selectedIndex, navController = navController)
-            }
-
-            else -> Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator()
-            }
-        }
+        CardItemList(
+            viewModel = viewModel,
+            selectedIndex = selectedIndex,
+            navController = navController
+        )
         Box(
             Modifier
                 .height(20.dp)
@@ -109,9 +106,21 @@ private fun TabBody(selectedIndex: State<Int>, viewModel: DashboardViewModel, na
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun CardItemList(contentList: List<ContentListData>, selectedIndex: State<Int>, navController: NavController) {
+private fun CardItemList(
+    viewModel: DashboardViewModel,
+    selectedIndex: State<Int>,
+    navController: NavController
+) {
     val listState = rememberLazyListState()
+
+    val response = when (selectedIndex.value) {
+        1 -> viewModel.readContentFlow.collectAsLazyPagingItems()
+        2 -> viewModel.watchContentFlow.collectAsLazyPagingItems()
+        3 -> viewModel.listenContentFlow.collectAsLazyPagingItems()
+        else -> viewModel.forYouContentFlow.collectAsLazyPagingItems()
+    }
 
     LaunchedEffect(key1 = selectedIndex.value) {
         listState.animateScrollToItem(0)
@@ -120,22 +129,47 @@ private fun CardItemList(contentList: List<ContentListData>, selectedIndex: Stat
     LazyColumn(
         state = listState, contentPadding = PaddingValues(top = 20.dp, start = 16.dp, end = 16.dp)
     ) {
-        itemsIndexed(contentList) { index, content ->
+        items(response.itemCount) {
             CardItem(
-                heading = content.title,
-                contentType = content.category,
-                imageUrl = content.thumbnail,
+                heading = response[it]?.title ?: "",
+                contentType = response[it]?.category ?: "",
+                imageUrl = response[it]?.thumbnail,
                 modifier = Modifier.clickable {
                     navController.navigate(
                         Screen.DetailScreen.withArgs(
-                            content.thumbnail,
-                            content.title,
-                            content.description,
+                            response[it]?.thumbnail ?: "",
+                            response[it]?.title ?: "",
+                            response[it]?.description ?: "",
                         )
                     )
                 },
-                date = content.createdAt
+                date = response[it]?.createdAt ?: ""
             )
+        }
+        response.apply {
+            when {
+                loadState.refresh is LoadState.Loading || loadState.append is LoadState.Loading -> {
+                    item {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    }
+                }
+
+                loadState.refresh is LoadState.Error || loadState.append is LoadState.Error -> {
+                    item {
+                        Text(text = "Error")
+                    }
+                }
+
+                loadState.refresh is LoadState.NotLoading -> {
+                }
+            }
         }
     }
 }
