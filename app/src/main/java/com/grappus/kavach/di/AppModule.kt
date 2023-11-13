@@ -58,7 +58,7 @@ object AppModule {
         val httpClient = OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .addInterceptor(logInterceptor)
-            .build();
+            .build()
 
         val moshi =
             Moshi.Builder()
@@ -75,7 +75,6 @@ object AppModule {
     @Provides
     @Singleton
     fun provideKavachApi(retrofit: Retrofit): KavachApi {
-        return retrofit.create(KavachApi::class.java)
+        return retrofit.newBuilder().baseUrl(BASE_URL).build().create(KavachApi::class.java)
     }
-
 }

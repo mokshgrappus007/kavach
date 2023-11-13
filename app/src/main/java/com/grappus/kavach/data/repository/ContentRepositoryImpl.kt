@@ -2,91 +2,74 @@ package com.grappus.kavach.data.repository
 
 import com.grappus.kavach.data.data_source.KavachApi
 import com.grappus.kavach.data.dto.request_body.ImageRequestBodyDto
-import com.grappus.kavach.data.mappers.ContentDetailsMapper
 import com.grappus.kavach.data.mappers.ContentMapper
 import com.grappus.kavach.data.mappers.ImageMapper
-import com.grappus.kavach.domain.ResponseData
 import com.grappus.kavach.domain.model.response_model.Content
-import com.grappus.kavach.domain.model.response_model.ContentDetails
 import com.grappus.kavach.domain.model.response_model.Image
 import com.grappus.kavach.domain.repository.ContentRepository
+import com.grappus.kavach.domain.utils.GenericException
+import com.grappus.kavach.domain.utils.UnauthorizedException
+import okhttp3.internal.http.HTTP_UNAUTHORIZED
 import javax.inject.Inject
 
 class ContentRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) :
     ContentRepository {
     override suspend fun getContent(
         page: Int,
+        pageSize: Int,
         contentType: String?,
-    ): ResponseData<List<Content>> {
-        return try {
+    ): List<Content> {
+        try {
             val response =
                 kavachApi.getContent(
                     type = contentType,
-                    page = page
+                    page = page,
+                    size = pageSize,
                 )
             if (response.isSuccessful) {
                 val successResult = response.body()
                 if (successResult != null) {
-                    ResponseData.Success(
-                        data = ContentMapper().fromMap(successResult)
-                    )
+                    return ContentMapper().fromMap(successResult)
                 } else {
-                    ResponseData.Error(
-                        message = "No content"
-                    )
+                    throw GenericException(message = "No Content")
                 }
+            } else if (response.code() == HTTP_UNAUTHORIZED) {
+                throw UnauthorizedException(message = "token expired")
             } else {
-                ResponseData.Error(message = "Unable to get content details")
+                throw GenericException(message = "Something went wrong")
             }
+        } catch (e: GenericException) {
+            throw e
+        } catch (e: UnauthorizedException) {
+            throw e
         } catch (e: Exception) {
-            ResponseData.Error(message = "Unable to proceed request")
+            throw GenericException(message = e.message.toString())
         }
     }
 
-    override suspend fun getContentDetails(contentId: String): ResponseData<ContentDetails> {
-        return try {
-            val response = kavachApi.getContentDetail(contentId = contentId)
-            if (response.isSuccessful) {
-                val successResult = response.body()
-                if (successResult != null) {
-                    ResponseData.Success(
-                        data = ContentDetailsMapper().fromMap(successResult)
-                    )
-                } else {
-                    ResponseData.Error(
-                        message = "No content Detail"
-                    )
-                }
-            } else {
-                val errorResponse = response.errorBody()
-                ResponseData.Error(message = "Unable to get content details")
-            }
-        } catch (e: Exception) {
-            ResponseData.Error(message = "Unable to proceed request")
-        }
-    }
-
-    override suspend fun getImage(fileName: String, contentType: String): ResponseData<Image> {
-        return try {
+    override suspend fun getImage(fileName: String, contentType: String): Image {
+        try {
             val imageRequestBodyDto =
                 ImageRequestBodyDto(fileName = fileName, contentType = contentType)
             val response = kavachApi.getContentImage(imageRequestBodyDto = imageRequestBodyDto)
-            if (response.isSuccessful) {
+            return if (response.isSuccessful) {
                 val successResult = response.body()
                 if (successResult != null) {
-                    ResponseData.Success(
-                        data = ImageMapper().fromMap(successResult)
-                    )
+                    ImageMapper().fromMap(successResult)
                 } else {
-                    ResponseData.Error(
-                        message = "Image not found"
-                    )
+                    throw GenericException(message = "Image not found")
                 }
+            } else if (response.code() == HTTP_UNAUTHORIZED) {
+                throw UnauthorizedException(message = "token expired")
             } else {
-                ResponseData.Error(message = "Unable to get image details")
+                Image(
+                    downloadURL = "null"
+                )
             }
-        } catch (e: Exception) {
-            ResponseData.Error(message = "Unable to proceed request")
+        } catch (e: GenericException) {
+            throw e
+        } catch (e: UnauthorizedException) {
+            throw e
         }
     }
 }

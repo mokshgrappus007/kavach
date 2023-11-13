@@ -1,5 +1,6 @@
 package com.grappus.kavach.ui.theme
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
