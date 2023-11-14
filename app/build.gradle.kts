@@ -108,4 +108,7 @@ dependencies {
 
 //    metamask dependency
     implementation(libs.metamask.android.sdk)
+
+//    live data
+    implementation(libs.runtime.livedata)
 }

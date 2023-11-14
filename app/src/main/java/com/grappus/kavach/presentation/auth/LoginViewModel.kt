@@ -38,6 +38,12 @@ class LoginViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    val ethereumState = MediatorLiveData<EthereumState>().apply {
+        addSource(ethereum.ethereumState) { newEthereumState ->
+            value = newEthereumState
+        }
+    }
+
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
         object Navigate : UiEvent()
@@ -90,30 +96,29 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-
-    init {
-        val dapp = Dapp("moksh", "moksh.com")
-        connect(dapp)
-    }
-
-    val ethereumState = MediatorLiveData<EthereumState>().apply {
-        addSource(ethereum.ethereumState) { newEthereumState ->
-            value = newEthereumState
-        }
-    }
-
     fun connect(
         dapp: Dapp,
     ) {
+        if (ethereumState.value?.selectedAddress?.isNotEmpty() == true) {
+            disconnect()
+            clearSession()
+        }
         ethereum.connect(dapp) { result ->
             if (result is RequestError) {
                 Log.e("Ethereum connection error ", result.message)
             } else {
-                signMessage(message = "welcome to kavach", address = result.toString())
-                Log.v("Ethereum sign success ", result.toString())
+                fun signMessage(): String {
+                    return "{\"domain\":{\"chainId\":\"0x1\",\"name\":\"Ether Mail\",\"verifyingContract\":\"0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC\",\"version\":\"1\"},\"message\":{\"contents\":\"Hello, Moksh!\",\"from\":{\"name\":\"Moksh\",\"wallets\":[\"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826\",\"0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF\"]},\"to\":[{\"name\":\"Moksh\",\"wallets\":[\"0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB\",\"0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57\",\"0xB0B0b0b0b0b0B000000000000000000000000000\"]}]},\"primaryType\":\"Mail\",\"types\":{\"EIP712Domain\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"version\",\"type\":\"string\"},{\"name\":\"chainId\",\"type\":\"uint256\"},{\"name\":\"verifyingContract\",\"type\":\"address\"}],\"Group\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"members\",\"type\":\"Person[]\"}],\"Mail\":[{\"name\":\"from\",\"type\":\"Person\"},{\"name\":\"to\",\"type\":\"Person[]\"},{\"name\":\"contents\",\"type\":\"string\"}],\"Person\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"wallets\",\"type\":\"address[]\"}]}}"
+                }
+                signMessage(
+                    message = signMessage(),
+                    address = result.toString()
+                )
+                Log.v("Ethereum connection success ", result.toString())
             }
         }
     }
+
 
     fun disconnect() {
         ethereum.disconnect()
@@ -130,9 +135,8 @@ class LoginViewModel @Inject constructor(
         val params: List<String> = listOf(address, message)
 
         val signRequest = EthereumRequest(
-            UUID.randomUUID().toString(),
-            EthereumMethod.ETH_SIGN_TYPED_DATA_V4.value,
-            params
+            method = EthereumMethod.ETH_SIGN_TYPED_DATA_V4.value,
+            params = params
         )
 
         ethereum.sendRequest(signRequest) { result ->
@@ -140,7 +144,8 @@ class LoginViewModel @Inject constructor(
                 Log.e("Ethereum sign error ", result.message)
                 Log.e("Ethereum sign error ", result.code.toString())
             } else {
-                Log.v("Ethereum connection success ", result.toString())
+                viewModelScope.launch { _eventFlow.emit(UiEvent.ShowSnackbar(message = "MetaMask login successfull public address is: $result")) }
+                Log.v("Ethereum sign success ", result.toString())
             }
         }
     }

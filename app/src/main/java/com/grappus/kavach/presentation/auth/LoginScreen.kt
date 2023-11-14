@@ -2,7 +2,6 @@ package com.grappus.kavach.presentation.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,6 +47,7 @@ import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.Typography
 import kotlinx.coroutines.flow.collectLatest
+import io.metamask.androidsdk.Dapp
 
 @Composable
 fun LoginScreen(
@@ -250,7 +250,7 @@ fun LoginScreen(
                                     onClicked = {}, title = "Login with Discord"
                                 )
                                 LoginOption(
-                                    onClicked = {}, title = "Login with Metamask"
+                                    onClicked = {viewModel.connect(dapp = Dapp(name = "Moksh", url = "moksh.com"))}, title = "Login with Metamask"
                                 )
                                 LoginOption(
                                     onClicked = {}, title = "Login with Apple"
