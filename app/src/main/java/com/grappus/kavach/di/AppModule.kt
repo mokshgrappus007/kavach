@@ -32,94 +32,35 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthInterceptor(sharedPreferences: SharedPreferences): Interceptor {
-        return Interceptor { chain ->
-            val original = chain.request()
-            val token = sharedPreferences.getString("AUTH_KEY", "") ?: ""
-            val requestBuilder = original
-                .newBuilder()
+    fun provideKavachApiInstance(sharedPreferences: SharedPreferences): KavachApi {
+        val token = sharedPreferences.getString("AUTH_KEY", "") ?: ""
 
-            if (token.isNotEmpty()) {
-                requestBuilder
-                    .header("Authorization", "Bearer $token")
-            }
-
-            val request = requestBuilder
-                .header("Accept", "application/json")
-                .method(original.method, original.body)
-                .build()
-
-            return@Interceptor chain.proceed(request)
-        }
+        val headers = mapOf(
+            Pair("Authorization", "Bearer $token"),
+        )
+        val retrofitInstance = RetrofitInstance(
+            BASE_URL,
+            headers,
+            KavachApi::class.java
+        )
+        return retrofitInstance()
     }
 
     @Provides
     @Singleton
-    fun provideRetrofitInstance(authInterceptor: Interceptor): KavachApi {
+    fun provideTwitchApiInstance(sharedPreferences: SharedPreferences): TwitchApi {
+        val token = sharedPreferences.getString("TWITCH_ACCESS", "") ?: ""
 
-        val logInterceptor = HttpLoggingInterceptor()
-            .setLevel(HttpLoggingInterceptor.Level.BODY)
-
-        val httpClient = OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .addInterceptor(logInterceptor)
-            .build()
-
-        val moshi =
-            Moshi.Builder()
-                .addLast(KotlinJsonAdapterFactory())
-                .build()
-
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(httpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-            .create(KavachApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun providesTwitchApis(sharedPreferences: SharedPreferences): TwitchApi {
-        val interceptor = Interceptor { chain ->
-            val original = chain.request()
-            val token = sharedPreferences.getString("TWITCH_ACCESS", "") ?: ""
-            val requestBuilder = original
-                .newBuilder()
-
-            if (token.isNotEmpty()) {
-                requestBuilder
-                    .header("Authorization", "Bearer $token")
-            }
-            val request = requestBuilder
-                .header("Client-Id", "bktdr8rtppds8dk55fggg8yqezcgqu")
-                .header("Accept", "application/json")
-                .method(original.method, original.body)
-                .build()
-
-
-            return@Interceptor chain.proceed(request)
-        }
-
-        val logInterceptor = HttpLoggingInterceptor()
-            .setLevel(HttpLoggingInterceptor.Level.BODY)
-
-        val httpClient = OkHttpClient.Builder()
-            .addInterceptor(interceptor)
-            .addInterceptor(logInterceptor)
-            .build()
-
-        val moshi =
-            Moshi.Builder()
-                .addLast(KotlinJsonAdapterFactory())
-                .build()
-
-        return Retrofit.Builder()
-            .baseUrl("https://api.twitch.tv/helix/")
-            .client(httpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-            .create(TwitchApi::class.java)
+        val headers = mapOf(
+            Pair("Authorization", "Bearer $token"),
+            Pair("Client-Id", "bktdr8rtppds8dk55fggg8yqezcgqu"),
+        )
+        val retrofitInstance = RetrofitInstance(
+            "https://api.twitch.tv/helix/",
+            headers,
+            TwitchApi::class.java
+        )
+        return retrofitInstance()
     }
 
     @Provides

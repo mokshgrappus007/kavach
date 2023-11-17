@@ -71,6 +71,8 @@ class AuthRepositoryImpl @Inject constructor(
             }
         } catch (e: GenericException) {
             throw e
+        } catch (e: Exception) {
+            throw GenericException(message = e.message.toString())
         }
     }
 }
