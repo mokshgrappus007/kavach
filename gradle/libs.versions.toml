@@ -22,7 +22,6 @@ coil-compose = "2.4.0"
 paging = "3.2.1"
 metamask = "0.2.1"
 runtime-livedata = "1.5.4"
-appauth = "0.11.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -75,9 +74,6 @@ paging-compose = { group = "androidx.paging", name = "paging-compose", version.r
 
 # Metamask
 metamask-android-sdk = { group = "io.metamask.androidsdk", name = "metamask-android-sdk", version.ref = "metamask" }
-
-appauth = {group = "net.openid", name = "appauth",version.ref = "appauth"}
-
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
