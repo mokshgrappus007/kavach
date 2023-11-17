@@ -22,6 +22,7 @@ coil-compose = "2.4.0"
 paging = "3.2.1"
 metamask = "0.2.1"
 runtime-livedata = "1.5.4"
+appauth = "0.11.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -75,6 +76,9 @@ paging-compose = { group = "androidx.paging", name = "paging-compose", version.r
 # Metamask
 metamask-android-sdk = { group = "io.metamask.androidsdk", name = "metamask-android-sdk", version.ref = "metamask" }
 
+appauth = {group = "net.openid", name = "appauth",version.ref = "appauth"}
+
+
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
@@ -84,6 +88,7 @@ org-jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "o
 
 # Dagger - Hilt
 com-google-dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt-android" }
+
 
 [bundles]
 

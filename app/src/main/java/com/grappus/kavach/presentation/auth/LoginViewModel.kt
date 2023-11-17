@@ -1,16 +1,22 @@
 package com.grappus.kavach.presentation.auth
 
+import android.content.Intent
+import android.content.SharedPreferences
+import android.net.Uri
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.addPathNodes
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grappus.kavach.domain.ErrorType
 import com.grappus.kavach.domain.ResponseData
 import com.grappus.kavach.domain.use_case.auth_usecase.AuthUseCase
+import com.grappus.kavach.domain.utils.GenericException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.metamask.androidsdk.Dapp
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,7 +33,8 @@ import java.util.UUID
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authUseCase: AuthUseCase,
-    private val ethereum: Ethereum
+    private val ethereum: Ethereum,
+    private val sharedPreferences: SharedPreferences,
 ) : ViewModel() {
 
     var phoneTextState by mutableStateOf("")
@@ -146,6 +153,27 @@ class LoginViewModel @Inject constructor(
             } else {
                 viewModelScope.launch { _eventFlow.emit(UiEvent.ShowSnackbar(message = "MetaMask login successfull public address is: $result")) }
                 Log.v("Ethereum sign success ", result.toString())
+            }
+        }
+    }
+
+    fun getTwitchUserName(accessToken: String) {
+        viewModelScope.launch {
+            isLoginInProgress.value = true
+            sharedPreferences.edit().putString("TWITCH_ACCESS", accessToken).apply()
+
+            when (val response = authUseCase.getTwitchUser()) {
+                is ResponseData.Success -> {
+                    isLoginInProgress.value = false
+                    _eventFlow.emit(UiEvent.ShowSnackbar(message = "welcome to kavach: ${response.data} 😁"))
+                }
+
+                is ResponseData.Error -> {
+                    isLoginInProgress.value = false
+                    if (response.errorType is ErrorType.Generic) {
+                        _eventFlow.emit(UiEvent.ShowSnackbar(message = response.errorType.message))
+                    }
+                }
             }
         }
     }

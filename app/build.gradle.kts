@@ -111,4 +111,7 @@ dependencies {
 
 //    live data
     implementation(libs.runtime.livedata)
+
+//    app auth
+//    implementation(libs.appauth)
 }
