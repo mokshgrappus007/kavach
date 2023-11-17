@@ -1,5 +1,6 @@
 package com.grappus.kavach.di
 
+import android.content.Context
 import android.content.SharedPreferences
 import com.grappus.kavach.data.data_source.KavachApi
 import com.squareup.moshi.Moshi
@@ -7,7 +8,9 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.metamask.androidsdk.Ethereum
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -76,5 +79,11 @@ object AppModule {
     @Singleton
     fun provideKavachApi(retrofit: Retrofit): KavachApi {
         return retrofit.newBuilder().baseUrl(BASE_URL).build().create(KavachApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEthereum(@ApplicationContext context: Context): Ethereum {
+        return Ethereum(context)
     }
 }
