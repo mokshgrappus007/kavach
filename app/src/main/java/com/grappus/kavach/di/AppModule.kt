@@ -30,7 +30,7 @@ object AppModule {
     fun provideAuthInterceptor(sharedPreferences: SharedPreferences): Interceptor {
         return Interceptor { chain ->
             val original = chain.request()
-            val token = sharedPreferences.getString("AUTH_KEY", "") ?: ""
+            val token = sharedPreferences.getString(SharedPrefManager.AUTH_KEY, "") ?: ""
             val requestBuilder = original
                 .newBuilder()
 

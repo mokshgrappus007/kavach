@@ -4,7 +4,7 @@ import java.util.*
 plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
-    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.org.jetbrains.kotlin.kapts)
     alias(libs.plugins.com.google.dagger.hilt.android)
 }
 
@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.grappus.kavach"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -22,7 +22,9 @@ android {
         val properties = Properties()
         properties.load(project.rootProject.file("local.properties").inputStream())
         val baseUrl = properties.getProperty("base_url")
+        val discordKey = properties.getProperty("discord_key")
         buildConfigField("String", "BASE_URL", baseUrl)
+        buildConfigField("String", "DISCORD_KEY", discordKey)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -105,4 +107,6 @@ dependencies {
 //    paging3
     implementation(libs.paging.runtime.ktx)
     implementation(libs.paging.compose)
+
+    implementation(libs.net.openid.appauth)
 }

@@ -14,7 +14,6 @@ import com.grappus.kavach.presentation.dashboard.DashboardNestedScreen
 import com.grappus.kavach.presentation.dashboard.DashboardScreen
 import com.grappus.kavach.presentation.detail.DetailScreen
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavGraph(sharedPreferences: SharedPreferences) {
     val navController = rememberNavController()

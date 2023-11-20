@@ -1,8 +1,14 @@
 package com.grappus.kavach.presentation.auth
 
+import android.app.Activity.RESULT_OK
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,10 +37,13 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -42,18 +51,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.grappus.kavach.di.DISCORD_CLIENT_ID
+import com.grappus.kavach.di.REDIRECT_URI
 import com.grappus.kavach.navigation.Screen
 import com.grappus.kavach.ui.theme.BruleFont
 import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.Typography
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import net.openid.appauth.AuthorizationException
+import net.openid.appauth.AuthorizationRequest
+import net.openid.appauth.AuthorizationResponse
+import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.ResponseTypeValues
 
 @Composable
 fun LoginScreen(
     navController: NavController,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
+    val context: Context = LocalContext.current
+
+    val result =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult(),
+            onResult = {
+                when (it.resultCode) {
+                    RESULT_OK -> {
+                        it.data?.let { data ->
+                            viewModel.saveAccessToken(data.data!!)
+
+                        }
+                    }
+                }
+            })
+
     val phoneNumberState = viewModel.phoneTextState
     val snackBarState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
@@ -61,7 +94,7 @@ fun LoginScreen(
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
-                is LoginViewModel.UiEvent.ShowSnackbar -> {
+                is LoginViewModel.UiEvent.ShowSnackBar -> {
                     snackBarState.showSnackbar(message = event.message)
                 }
 
@@ -98,7 +131,6 @@ fun LoginScreen(
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(vertical = 15.dp)
-
                     ) {
                         if (viewModel.isLoginInProgress.value) CircularProgressIndicator(
                             Modifier.size(24.dp), color = Color.White
@@ -208,8 +240,7 @@ fun LoginScreen(
                                             unfocusedContainerColor = KavachColor.Transparent,
                                             focusedIndicatorColor = KavachColor.Transparent,
                                             unfocusedIndicatorColor = KavachColor.Transparent,
-
-                                            ),
+                                        ),
                                         placeholder = {
                                             Text(
                                                 text = "Enter phone number ...",
@@ -232,7 +263,6 @@ fun LoginScreen(
                                         },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
                                     )
-
                                 }
                             }
                         }
@@ -240,14 +270,15 @@ fun LoginScreen(
                             modifier = Modifier.height(21.dp)
                         )
                         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                            Column(
-                            ) {
+                            Column {
                                 // Google, Discord, Apple, twitch, Metamask.
                                 LoginOption(
                                     onClicked = {}, title = "Login with Twitch"
                                 )
                                 LoginOption(
-                                    onClicked = {}, title = "Login with Discord"
+                                    onClicked = {
+                                        result.launch(viewModel.getIntentForDiscordAuth(context))
+                                    }, title = "Login with Discord"
                                 )
                                 LoginOption(
                                     onClicked = {}, title = "Login with Metamask"

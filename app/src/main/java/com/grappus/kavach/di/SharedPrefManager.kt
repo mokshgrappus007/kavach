@@ -10,6 +10,10 @@ import javax.inject.Inject
 class SharedPrefManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
+    companion object {
+        const val AUTH_KEY = "AUTH_KEY"
+    }
+
     fun getSharedPref(): SharedPreferences {
         return EncryptedSharedPreferences.create(
             context,

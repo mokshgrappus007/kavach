@@ -51,7 +51,6 @@ import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.LuckiestGuyFont
 import kotlinx.coroutines.flow.collectLatest
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel = hiltViewModel()) {
 //    LaunchedEffect(key1 = true){
@@ -88,7 +87,6 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun TabBody(
     selectedIndex: State<Int>,
@@ -128,7 +126,6 @@ private fun TabBody(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun CardItemList(
     viewModel: DashboardViewModel,
@@ -184,7 +181,8 @@ private fun CardItemList(
                 }
 
                 loadState.refresh is LoadState.Error || loadState.append is LoadState.Error -> {
-                    val errorState = loadState.refresh as? LoadState.Error ?: loadState.append as LoadState.Error
+                    val errorState =
+                        loadState.refresh as? LoadState.Error ?: loadState.append as LoadState.Error
 
                     when (val throwable = errorState.error) {
                         is GenericException -> {
@@ -192,9 +190,11 @@ private fun CardItemList(
                                 Text(text = "Generic Error: ${throwable.message}")
                             }
                         }
+
                         is UnauthorizedException -> {
                             navController.navigate(route = Screen.LoginScreen.route)
                         }
+
                         else -> {
                             // Handle other exceptions as needed
                             item {
