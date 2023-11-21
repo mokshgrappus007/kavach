@@ -1,8 +1,10 @@
 package com.grappus.kavach.presentation.auth
 
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -48,15 +51,25 @@ import com.grappus.kavach.ui.theme.KavachColor
 import com.grappus.kavach.ui.theme.KavachTheme
 import com.grappus.kavach.ui.theme.Typography
 import kotlinx.coroutines.flow.collectLatest
+import io.metamask.androidsdk.Dapp
 
 @Composable
 fun LoginScreen(
     navController: NavController,
     viewModel: LoginViewModel = hiltViewModel(),
+    twitchAccessToken: String,
 ) {
     val phoneNumberState = viewModel.phoneTextState
     val snackBarState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = twitchAccessToken) {
+        if (twitchAccessToken != "null") {
+            Log.v("token is", twitchAccessToken)
+            viewModel.getTwitchUserName(twitchAccessToken)
+        }
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -244,13 +257,32 @@ fun LoginScreen(
                             ) {
                                 // Google, Discord, Apple, twitch, Metamask.
                                 LoginOption(
-                                    onClicked = {}, title = "Login with Twitch"
+                                    onClicked = {
+                                        val twitchAuthUrl =
+                                            "https://id.twitch.tv/oauth2/authorize" +
+                                                    "?response_type=token" +
+                                                    "&client_id=bktdr8rtppds8dk55fggg8yqezcgqu" +
+                                                    "&redirect_uri=https://tinyurl.com/bdctujsj" +
+                                                    "&scope=channel%3Amanage%3Apolls+channel%3Aread%3Apolls" +
+                                                    "&state=c3ab8aa609ea11e793ae92361f002671"
+
+                                        val intent =
+                                            Intent(Intent.ACTION_VIEW, Uri.parse(twitchAuthUrl))
+                                        context.startActivity(intent)
+                                    }, title = "Login with Twitch"
                                 )
                                 LoginOption(
                                     onClicked = {}, title = "Login with Discord"
                                 )
                                 LoginOption(
-                                    onClicked = {}, title = "Login with Metamask"
+                                    onClicked = {
+                                        viewModel.connect(
+                                            dapp = Dapp(
+                                                name = "Moksh",
+                                                url = "moksh.com"
+                                            )
+                                        )
+                                    }, title = "Login with Metamask"
                                 )
                                 LoginOption(
                                     onClicked = {}, title = "Login with Apple"

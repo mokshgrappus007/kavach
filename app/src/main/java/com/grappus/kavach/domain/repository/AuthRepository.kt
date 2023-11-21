@@ -8,4 +8,6 @@ import com.grappus.kavach.domain.model.response_model.OtpVerified
 interface AuthRepository {
     suspend fun getOtp(otpRequest: OtpSentRequest): Boolean
     suspend fun verifyOtp(otpVerifyRequest: OtpVerifyRequest): OtpVerified
+
+    suspend fun getTwitchUserName(): String
 }

@@ -105,4 +105,10 @@ dependencies {
 //    paging3
     implementation(libs.paging.runtime.ktx)
     implementation(libs.paging.compose)
+
+//    metamask dependency
+    implementation(libs.metamask.android.sdk)
+
+//    live data
+    implementation(libs.runtime.livedata)
 }

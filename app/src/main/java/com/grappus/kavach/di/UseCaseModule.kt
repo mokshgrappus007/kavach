@@ -19,16 +19,20 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideAuthUseCase(authRepository: AuthRepository, sharedPreferences: SharedPreferences): AuthUseCase {
+    fun provideAuthUseCase(
+        authRepository: AuthRepository,
+        sharedPreferences: SharedPreferences
+    ): AuthUseCase {
         return AuthUseCase(
             sendOtp = SendOtp(authRepository),
             verifyOtp = VerifyOtp(authRepository, sharedPreferences),
+            getTwitchUser = GetTwitchUser(authRepository)
         )
     }
 
     @Provides
     @Singleton
-    fun provideContentUseCase(contentRepository: ContentRepository):ContentUseCase{
+    fun provideContentUseCase(contentRepository: ContentRepository): ContentUseCase {
         return ContentUseCase(
             getAllContent = GetAllContent(contentRepository),
             getImage = GetImageUrl(contentRepository)

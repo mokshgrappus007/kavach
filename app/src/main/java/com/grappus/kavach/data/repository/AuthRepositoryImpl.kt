@@ -1,9 +1,11 @@
 package com.grappus.kavach.data.repository
 
 import com.grappus.kavach.data.data_source.KavachApi
+import com.grappus.kavach.data.data_source.TwitchApi
 import com.grappus.kavach.data.mappers.OtpRequestMapper
 import com.grappus.kavach.data.mappers.OtpVerifiedWrapper
 import com.grappus.kavach.data.mappers.OtpVerifyRequestMapper
+import com.grappus.kavach.data.mappers.TwitchUserMapper
 import com.grappus.kavach.domain.ResponseData
 import com.grappus.kavach.domain.model.request_model.OtpSentRequest
 import com.grappus.kavach.domain.model.request_model.OtpVerifyRequest
@@ -12,7 +14,10 @@ import com.grappus.kavach.domain.repository.AuthRepository
 import com.grappus.kavach.domain.utils.GenericException
 import javax.inject.Inject
 
-class AuthRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) : AuthRepository {
+class AuthRepositoryImpl @Inject constructor(
+    private val kavachApi: KavachApi,
+    private val twitchApi: TwitchApi
+) : AuthRepository {
     override suspend fun getOtp(otpRequest: OtpSentRequest): Boolean {
         try {
             val response = kavachApi.sendOtp(OtpRequestMapper().fromMap(otpRequest))
@@ -47,6 +52,27 @@ class AuthRepositoryImpl @Inject constructor(private val kavachApi: KavachApi) :
             }
         } catch (e: GenericException) {
             throw e
+        }
+    }
+
+    override suspend fun getTwitchUserName(): String {
+        try {
+            val response = twitchApi.getUser()
+            if (response.isSuccessful) {
+                val responseBody = response.body()
+                if (responseBody != null) {
+                    val twitchUser = TwitchUserMapper().fromMap(responseBody)
+                    return twitchUser.displayName
+                } else {
+                    throw GenericException(message = "No user")
+                }
+            } else {
+                throw GenericException(message = "Something went wrong")
+            }
+        } catch (e: GenericException) {
+            throw e
+        } catch (e: Exception) {
+            throw GenericException(message = e.message.toString())
         }
     }
 }

@@ -20,6 +20,8 @@ moshi = "1.15.0"
 security-crypto = "1.1.0-alpha06"
 coil-compose = "2.4.0"
 paging = "3.2.1"
+metamask = "0.2.1"
+runtime-livedata = "1.5.4"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -36,6 +38,9 @@ ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
+
+# live data
+runtime-livedata = {group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtime-livedata"}
 
 # Compose Dependencies
 lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
@@ -62,10 +67,13 @@ moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-code
 
 security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
 
-coil-compose = {group = "io.coil-kt", name = "coil-compose",version.ref="coil-compose"}
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-compose" }
 
 paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "paging" }
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+
+# Metamask
+metamask-android-sdk = { group = "io.metamask.androidsdk", name = "metamask-android-sdk", version.ref = "metamask" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
@@ -76,6 +84,7 @@ org-jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "o
 
 # Dagger - Hilt
 com-google-dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt-android" }
+
 
 [bundles]
 
